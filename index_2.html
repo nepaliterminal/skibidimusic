@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎵 skibidi music</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080810;
+  --s1: #0e0e1a;
+  --s2: #16162a;
+  --s3: #1e1e35;
+  --border: #2a2a45;
+  --green: #1DB954;
+  --pink: #ff4d8d;
+  --gold: #ffd700;
+  --purple: #a855f7;
+  --blue: #38bdf8;
+  --text: #eeeeff;
+  --muted: #6060a0;
+  --font: 'Bricolage Grotesque', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; overflow-x: hidden; }
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background: radial-gradient(ellipse at 15% 15%, rgba(29,185,84,0.06) 0%, transparent 45%),
+              radial-gradient(ellipse at 85% 85%, rgba(168,85,247,0.06) 0%, transparent 45%),
+              radial-gradient(ellipse at 50% 50%, rgba(56,189,248,0.03) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 24px 16px; position: relative; z-index: 1; }
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* HEADER */
+.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -1px; background: linear-gradient(135deg, var(--green), var(--blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.user-pill { display: flex; align-items: center; gap: 10px; background: var(--s2); border: 1px solid var(--border); border-radius: 100px; padding: 6px 14px 6px 6px; }
+.user-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; background: var(--s3); }
+.user-name { font-size: 0.85rem; font-weight: 600; }
+.logout-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.75rem; margin-left: 4px; font-family: var(--font); transition: color 0.2s; }
+.logout-btn:hover { color: var(--pink); }
+
+/* SETUP BOX */
+.setup-box { background: var(--s1); border: 1px solid var(--border); border-radius: 24px; padding: 48px 40px; text-align: center; max-width: 660px; margin: 40px auto; }
+.setup-box .icon { font-size: 3.5rem; margin-bottom: 20px; }
+.setup-box h1 { font-size: 2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px; }
+.setup-box > p { color: var(--muted); line-height: 1.7; margin-bottom: 28px; font-size: 0.95rem; }
+.steps-row { display: flex; gap: 12px; margin-bottom: 28px; text-align: left; }
+.step-box { flex: 1; background: var(--s2); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
+.step-num { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--green), var(--blue)); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; color: #000; margin-bottom: 10px; }
+.step-box h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; }
+.step-box p { font-size: 0.78rem; color: var(--muted); line-height: 1.5; margin: 0; }
+.step-box a { color: var(--green); text-decoration: none; }
+.firebase-fields { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; text-align: left; }
+.field-label { font-size: 0.72rem; color: var(--muted); font-family: var(--mono); margin-bottom: 3px; }
+.inp { width: 100%; background: var(--s2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; color: var(--text); font-family: var(--mono); font-size: 0.82rem; outline: none; transition: border-color 0.2s; }
+.inp:focus { border-color: var(--green); }
+.inp::placeholder { color: var(--muted); }
+.btn { background: linear-gradient(135deg, var(--green), var(--blue)); border: none; border-radius: 12px; padding: 12px 24px; color: #000; font-family: var(--font); font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.btn:hover { transform: scale(1.03); filter: brightness(1.1); }
+.btn-ghost { background: transparent; border: 1px solid var(--border); border-radius: 12px; padding: 10px 20px; color: var(--text); font-family: var(--font); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+.btn-ghost:hover { border-color: var(--green); color: var(--green); }
+.err { color: var(--pink); font-size: 0.78rem; font-family: var(--mono); margin-top: 8px; }
+
+/* LOGIN */
+.login-center { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; text-align: center; }
+.login-center h1 { font-size: 3rem; font-weight: 800; letter-spacing: -2px; background: linear-gradient(135deg, var(--green), var(--blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px; }
+.login-center p { color: var(--muted); font-size: 1rem; margin-bottom: 36px; line-height: 1.6; }
+.spotify-btn { display: flex; align-items: center; gap: 12px; background: var(--green); color: #000; border: none; padding: 16px 32px; border-radius: 100px; font-family: var(--font); font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s; }
+.spotify-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+/* HOME */
+.home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
+.home-card { background: var(--s1); border: 1px solid var(--border); border-radius: 20px; padding: 28px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+.home-card::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.2s; }
+.home-card.create::before { background: linear-gradient(135deg, rgba(29,185,84,0.08), transparent); }
+.home-card.join::before { background: linear-gradient(135deg, rgba(168,85,247,0.08), transparent); }
+.home-card:hover::before { opacity: 1; }
+.home-card:hover { border-color: var(--green); transform: translateY(-2px); }
+.home-card.join:hover { border-color: var(--purple); }
+.home-card-icon { font-size: 2.5rem; margin-bottom: 16px; }
+.home-card h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+.home-card p { color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
+.section-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.group-item { display: flex; align-items: center; gap: 14px; padding: 14px; background: var(--s1); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+.group-item:hover { border-color: var(--green); background: var(--s2); }
+.group-emoji { font-size: 1.5rem; width: 44px; height: 44px; background: var(--s2); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.group-info { flex: 1; }
+.group-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
+.group-meta { font-size: 0.78rem; color: var(--muted); }
+.group-arrow { color: var(--muted); }
+
+/* MODAL */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-bg.hidden { display: none; }
+.modal { background: var(--s1); border: 1px solid var(--border); border-radius: 24px; padding: 32px; width: 100%; max-width: 460px; }
+.modal h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; }
+.modal > p { color: var(--muted); font-size: 0.85rem; margin-bottom: 24px; line-height: 1.5; }
+.emoji-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.emoji-opt { width: 44px; height: 44px; background: var(--s2); border: 2px solid transparent; border-radius: 12px; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.emoji-opt:hover, .emoji-opt.selected { border-color: var(--green); background: var(--s3); }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+/* GROUP VIEW */
+.group-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.back-btn { background: var(--s2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; color: var(--text); font-family: var(--font); font-size: 0.82rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.back-btn:hover { border-color: var(--green); color: var(--green); }
+.group-title-area { flex: 1; }
+.group-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; }
+.group-sub { font-size: 0.82rem; color: var(--muted); }
+.invite-btn { display: flex; align-items: center; gap: 8px; background: var(--s2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 16px; color: var(--text); font-family: var(--font); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.invite-btn:hover { border-color: var(--purple); color: var(--purple); }
+
+/* MEMBERS */
+.members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.member-card { background: var(--s1); border: 1px solid var(--border); border-radius: 20px; padding: 20px; }
+.member-card.is-me { border-color: rgba(29,185,84,0.3); background: linear-gradient(135deg, #0d1f12, #0e0e1a); }
+.member-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.member-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; background: var(--s3); flex-shrink: 0; }
+.member-name { font-size: 0.95rem; font-weight: 700; }
+.member-you { font-size: 0.7rem; color: var(--green); font-weight: 600; }
+.member-np { display: flex; align-items: center; gap: 10px; background: var(--s2); border-radius: 12px; padding: 10px; margin-bottom: 12px; }
+.np-art { width: 40px; height: 40px; border-radius: 8px; background: var(--s3); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+.np-art img { width: 100%; height: 100%; object-fit: cover; }
+.np-art.spinning { animation: spin 3s linear infinite; border-radius: 50%; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.np-info { flex: 1; min-width: 0; }
+.np-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--green); margin-bottom: 2px; }
+.np-track { font-size: 0.82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.np-artist { font-size: 0.73rem; color: var(--muted); }
+.idle-np { color: var(--muted); font-size: 0.78rem; font-style: italic; text-align: center; padding: 12px; background: var(--s2); border-radius: 12px; margin-bottom: 12px; }
+.member-sotd { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(255,215,0,0.15); background: rgba(255,215,0,0.04); margin-bottom: 12px; }
+.sotd-art-sm { width: 32px; height: 32px; border-radius: 6px; background: var(--s3); overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+.sotd-art-sm img { width: 100%; height: 100%; object-fit: cover; }
+.sotd-label-sm { font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); }
+.sotd-track-sm { font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.my-controls { display: flex; gap: 8px; margin-top: 4px; }
+.ctrl-btn { flex: 1; background: var(--s2); border: 1px solid var(--border); border-radius: 10px; padding: 8px; color: var(--text); font-family: var(--font); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.ctrl-btn:hover { border-color: var(--green); color: var(--green); }
+
+/* SOTD SEARCH */
+.search-inp { width: 100%; background: var(--s2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; color: var(--text); font-family: var(--font); font-size: 0.9rem; outline: none; margin-bottom: 12px; transition: border-color 0.2s; }
+.search-inp:focus { border-color: var(--green); }
+.search-results { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; }
+.result-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; cursor: pointer; border: 1px solid transparent; transition: all 0.15s; }
+.result-item:hover { background: var(--s2); border-color: var(--border); }
+.result-art { width: 44px; height: 44px; border-radius: 8px; background: var(--s2); overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+.result-art img { width: 100%; height: 100%; object-fit: cover; }
+.result-title { font-size: 0.88rem; font-weight: 600; }
+.result-artist { font-size: 0.76rem; color: var(--muted); }
+.loading-txt { color: var(--muted); font-size: 0.85rem; text-align: center; padding: 20px; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--green); color: #000; font-weight: 700; font-size: 0.85rem; padding: 10px 24px; border-radius: 100px; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 600px) {
+  .home-grid { grid-template-columns: 1fr; }
+  .steps-row { flex-direction: column; }
+  .members-grid { grid-template-columns: 1fr; }
+  .login-center h1 { font-size: 2rem; }
+  .group-header { gap: 10px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- FIREBASE SETUP -->
+  <div class="screen" id="screen-firebase">
+    <div class="setup-box">
+      <div class="icon">🔥</div>
+      <h1>One-time Setup</h1>
+      <p>Groups are saved in Firebase (free). Takes 3 minutes to set up — you only do this once.</p>
+      <div class="steps-row">
+        <div class="step-box">
+          <div class="step-num">1</div>
+          <h4>Create Firebase Project</h4>
+          <p>Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → "Add project" → skip Analytics</p>
+        </div>
+        <div class="step-box">
+          <div class="step-num">2</div>
+          <h4>Add Web App</h4>
+          <p>Click the <strong>&lt;/&gt;</strong> icon → register app → copy the config values below</p>
+        </div>
+        <div class="step-box">
+          <div class="step-num">3</div>
+          <h4>Enable Realtime DB</h4>
+          <p>Sidebar → <strong>Realtime Database</strong> → Create database → <strong>test mode</strong></p>
+        </div>
+      </div>
+      <div class="firebase-fields">
+        <div><div class="field-label">apiKey</div><input class="inp" id="fb-apiKey" placeholder="AIzaSy..."/></div>
+        <div><div class="field-label">databaseURL (ends with .firebaseio.com)</div><input class="inp" id="fb-dbUrl" placeholder="https://your-project-default-rtdb.firebaseio.com"/></div>
+        <div><div class="field-label">projectId</div><input class="inp" id="fb-projectId" placeholder="your-project-id"/></div>
+      </div>
+      <button class="btn" onclick="saveFirebaseConfig()" style="width:100%">Save & Continue →</button>
+      <p class="err" id="fb-err"></p>
+    </div>
+  </div>
+
+  <!-- SPOTIFY LOGIN -->
+  <div class="screen" id="screen-login">
+    <div class="login-center">
+      <div style="font-size:3rem;margin-bottom:16px">🎵</div>
+      <h1>skibidi music</h1>
+      <p>Sign in with Spotify to see your music,<br>create groups and share your listening with your crew.</p>
+      <button class="spotify-btn" onclick="startSpotifyAuth()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+        Sign in with Spotify
+      </button>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen" id="screen-home">
+    <div class="header">
+      <div class="logo">🎵 skibidi music</div>
+      <div class="user-pill">
+        <img class="user-avatar" id="home-avatar" src="" alt="av"/>
+        <span class="user-name" id="home-name"></span>
+        <button class="logout-btn" onclick="logout()">sign out</button>
+      </div>
+    </div>
+    <div class="home-grid">
+      <div class="home-card create" onclick="openModal('modal-create')">
+        <div class="home-card-icon">➕</div>
+        <h3>Create a Group</h3>
+        <p>Start a music group and invite classmates with a link.</p>
+      </div>
+      <div class="home-card join" onclick="openModal('modal-join')">
+        <div class="home-card-icon">🔗</div>
+        <h3>Join via Link</h3>
+        <p>Have an invite link? Paste it here to jump in.</p>
+      </div>
+    </div>
+    <div class="section-label">Your Groups</div>
+    <div id="my-groups-list"><div class="loading-txt">Loading...</div></div>
+  </div>
+
+  <!-- GROUP -->
+  <div class="screen" id="screen-group">
+    <div class="header">
+      <div class="logo">🎵 skibidi music</div>
+      <div class="user-pill">
+        <img class="user-avatar" id="group-avatar" src="" alt="av"/>
+        <span class="user-name" id="group-username"></span>
+        <button class="logout-btn" onclick="logout()">sign out</button>
+      </div>
+    </div>
+    <div class="group-header">
+      <button class="back-btn" onclick="goHome()">← Back</button>
+      <div class="group-title-area">
+        <div class="group-title" id="group-title-display"></div>
+        <div class="group-sub" id="group-sub"></div>
+      </div>
+      <button class="invite-btn" onclick="copyInviteLink()">🔗 Copy Invite Link</button>
+    </div>
+    <div class="members-grid" id="members-grid"></div>
+  </div>
+
+</div>
+
+<!-- CREATE MODAL -->
+<div class="modal-bg hidden" id="modal-create">
+  <div class="modal">
+    <h3>Create a Group</h3>
+    <p>Give it a name and pick a vibe.</p>
+    <div class="emoji-row">
+      <div class="emoji-opt selected" data-e="🎵" onclick="selectEmoji(this)">🎵</div>
+      <div class="emoji-opt" data-e="🔥" onclick="selectEmoji(this)">🔥</div>
+      <div class="emoji-opt" data-e="💿" onclick="selectEmoji(this)">💿</div>
+      <div class="emoji-opt" data-e="🎧" onclick="selectEmoji(this)">🎧</div>
+      <div class="emoji-opt" data-e="🎸" onclick="selectEmoji(this)">🎸</div>
+      <div class="emoji-opt" data-e="🎤" onclick="selectEmoji(this)">🎤</div>
+      <div class="emoji-opt" data-e="🌊" onclick="selectEmoji(this)">🌊</div>
+      <div class="emoji-opt" data-e="⚡" onclick="selectEmoji(this)">⚡</div>
+    </div>
+    <input class="inp" id="group-name-inp" placeholder="e.g. Period 3 Vibes" style="margin-bottom:8px"/>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-create')">Cancel</button>
+      <button class="btn" onclick="createGroup()">Create →</button>
+    </div>
+    <p class="err" id="create-err"></p>
+  </div>
+</div>
+
+<!-- JOIN MODAL -->
+<div class="modal-bg hidden" id="modal-join">
+  <div class="modal">
+    <h3>Join via Link</h3>
+    <p>Paste the invite link you got from a friend.</p>
+    <input class="inp" id="join-link-inp" placeholder="https://yoursite.netlify.app?group=..." style="margin-bottom:8px"/>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-join')">Cancel</button>
+      <button class="btn" onclick="joinViaLink()">Join →</button>
+    </div>
+    <p class="err" id="join-err"></p>
+  </div>
+</div>
+
+<!-- SOTD MODAL -->
+<div class="modal-bg hidden" id="modal-sotd">
+  <div class="modal">
+    <h3>⭐ Pick Song of the Day</h3>
+    <p>Search Spotify for a song to set as your SOTD.</p>
+    <input class="search-inp" id="sotd-search-inp" placeholder="Search songs..." oninput="debounceSearch(this.value)"/>
+    <div class="search-results" id="sotd-results"><div class="loading-txt">Start typing...</div></div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn-ghost" onclick="closeModal('modal-sotd')" style="width:100%">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Link copied!</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getDatabase, ref, set, get, update, onValue, off } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+const SPOTIFY_CLIENT_ID = '3fdee41ecbad4f8284015ac2ff9c2926';
+const SCOPES = 'user-read-currently-playing user-read-playback-state user-top-read user-read-private';
+const redirectUri = window.location.origin + window.location.pathname;
+
+let db = null;
+let spotifyToken = null;
+let currentUser = null;
+let currentGroupId = null;
+let groupListenerRef = null;
+let searchTimer = null;
+let npInterval = null;
+
+// ── FIREBASE ──
+function initFirebase(config) {
+  try { const app = initializeApp(config); db = getDatabase(app); return true; }
+  catch(e) { return false; }
+}
+
+function loadFirebaseConfig() {
+  const saved = localStorage.getItem('fb_config');
+  if (!saved) return false;
+  try { return initFirebase(JSON.parse(saved)); } catch(e) { return false; }
+}
+
+window.saveFirebaseConfig = function() {
+  const apiKey = document.getElementById('fb-apiKey').value.trim();
+  const databaseURL = document.getElementById('fb-dbUrl').value.trim();
+  const projectId = document.getElementById('fb-projectId').value.trim();
+  if (!apiKey || !databaseURL || !projectId) { document.getElementById('fb-err').textContent = '⚠ Fill all fields.'; return; }
+  const config = { apiKey, databaseURL, projectId, authDomain: `${projectId}.firebaseapp.com` };
+  if (!initFirebase(config)) { document.getElementById('fb-err').textContent = '⚠ Could not connect. Check your values.'; return; }
+  localStorage.setItem('fb_config', JSON.stringify(config));
+  showScreen('screen-login');
+  checkSpotifyCallback();
+};
+
+// ── SCREENS ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── SPOTIFY PKCE ──
+function genRandom(len) {
+  const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  return Array.from({length:len},()=>c[Math.floor(Math.random()*c.length)]).join('');
+}
+
+async function genChallenge(v) {
+  const d = new TextEncoder().encode(v);
+  const digest = await crypto.subtle.digest('SHA-256', d);
+  return btoa(String.fromCharCode(...new Uint8Array(digest))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+window.startSpotifyAuth = async function() {
+  const verifier = genRandom(128);
+  const challenge = await genChallenge(verifier);
+  sessionStorage.setItem('pkce_v', verifier);
+  const params = new URLSearchParams({
+    client_id: SPOTIFY_CLIENT_ID, response_type: 'code',
+    redirect_uri: redirectUri, scope: SCOPES,
+    code_challenge_method: 'S256', code_challenge: challenge
+  });
+  window.location.href = 'https://accounts.spotify.com/authorize?' + params;
+};
+
+async function exchangeCode(code) {
+  const verifier = sessionStorage.getItem('pkce_v');
+  const res = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ client_id: SPOTIFY_CLIENT_ID, grant_type: 'authorization_code', code, redirect_uri: redirectUri, code_verifier: verifier })
+  });
+  const data = await res.json();
+  return data.access_token || null;
+}
+
+async function checkSpotifyCallback() {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  const pendingGroup = params.get('group');
+  if (pendingGroup) sessionStorage.setItem('pending_group', pendingGroup);
+
+  if (code) {
+    history.replaceState(null, null, window.location.pathname);
+    const token = await exchangeCode(code);
+    if (token) { sessionStorage.setItem('sp_token', token); spotifyToken = token; await loadSpotifyUser(); }
+  } else {
+    const stored = sessionStorage.getItem('sp_token');
+    if (stored) { spotifyToken = stored; await loadSpotifyUser(); }
+    else showScreen('screen-login');
+  }
+}
+
+async function loadSpotifyUser() {
+  try {
+    const res = await fetch('https://api.spotify.com/v1/me', { headers: { 'Authorization': 'Bearer ' + spotifyToken } });
+    const data = await res.json();
+    if (!data.id) throw new Error('bad token');
+    currentUser = { id: data.id, name: data.display_name || data.id, avatar: data.images?.[0]?.url || '' };
+    ['home-avatar','group-avatar'].forEach(id => document.getElementById(id).src = currentUser.avatar);
+    ['home-name','group-username'].forEach(id => document.getElementById(id).textContent = currentUser.name);
+
+    const pending = sessionStorage.getItem('pending_group');
+    if (pending) { sessionStorage.removeItem('pending_group'); await joinGroup(pending); }
+    else { showScreen('screen-home'); loadMyGroups(); }
+  } catch(e) { sessionStorage.removeItem('sp_token'); showScreen('screen-login'); }
+}
+
+window.logout = function() { sessionStorage.clear(); spotifyToken = null; currentUser = null; showScreen('screen-login'); };
+
+// ── MODALS ──
+window.openModal = id => document.getElementById(id).classList.remove('hidden');
+window.closeModal = id => document.getElementById(id).classList.add('hidden');
+window.selectEmoji = function(el) { document.querySelectorAll('.emoji-opt').forEach(e => e.classList.remove('selected')); el.classList.add('selected'); };
+function getEmoji() { return document.querySelector('.emoji-opt.selected')?.dataset.e || '🎵'; }
+
+// ── GROUPS ──
+window.createGroup = async function() {
+  const name = document.getElementById('group-name-inp').value.trim();
+  if (!name) { document.getElementById('create-err').textContent = '⚠ Enter a name.'; return; }
+  const groupId = genRandom(8);
+  await set(ref(db, `groups/${groupId}`), { name, emoji: getEmoji(), createdBy: currentUser.id, createdAt: Date.now() });
+  closeModal('modal-create');
+  await joinGroup(groupId);
+};
+
+window.joinViaLink = async function() {
+  const val = document.getElementById('join-link-inp').value.trim();
+  let groupId = null;
+  try { groupId = new URL(val).searchParams.get('group'); } catch(e) { groupId = val; }
+  if (!groupId) { document.getElementById('join-err').textContent = '⚠ Invalid link.'; return; }
+  closeModal('modal-join');
+  await joinGroup(groupId);
+};
+
+async function joinGroup(groupId) {
+  const snap = await get(ref(db, `groups/${groupId}`));
+  if (!snap.exists()) { alert('Group not found!'); showScreen('screen-home'); loadMyGroups(); return; }
+  await set(ref(db, `groups/${groupId}/members/${currentUser.id}`), {
+    name: currentUser.name, avatar: currentUser.avatar, joinedAt: Date.now(), nowPlaying: null, sotd: null
+  });
+  openGroup(groupId);
+}
+
+async function loadMyGroups() {
+  const el = document.getElementById('my-groups-list');
+  const snap = await get(ref(db, 'groups'));
+  if (!snap.exists()) { el.innerHTML = '<div class="loading-txt">No groups yet — create one!</div>'; return; }
+  const groups = snap.val();
+  const mine = Object.entries(groups).filter(([,g]) => g.members?.[currentUser.id]);
+  if (!mine.length) { el.innerHTML = '<div class="loading-txt">No groups yet — create or join one above!</div>'; return; }
+  el.innerHTML = mine.map(([id, g]) => `
+    <div class="group-item" onclick="openGroup('${id}')">
+      <div class="group-emoji">${g.emoji||'🎵'}</div>
+      <div class="group-info">
+        <div class="group-name">${esc(g.name)}</div>
+        <div class="group-meta">${Object.keys(g.members||{}).length} members</div>
+      </div>
+      <div class="group-arrow">›</div>
+    </div>`).join('');
+}
+
+window.openGroup = async function(groupId) {
+  currentGroupId = groupId;
+  if (groupListenerRef) off(groupListenerRef);
+  showScreen('screen-group');
+  groupListenerRef = ref(db, `groups/${groupId}`);
+  onValue(groupListenerRef, snap => { if (snap.exists()) renderGroup(groupId, snap.val()); });
+  pushMyData();
+  if (npInterval) clearInterval(npInterval);
+  npInterval = setInterval(pushMyData, 30000);
+};
+
+window.goHome = function() {
+  if (groupListenerRef) off(groupListenerRef);
+  if (npInterval) clearInterval(npInterval);
+  currentGroupId = null;
+  showScreen('screen-home');
+  loadMyGroups();
+};
+
+function renderGroup(groupId, group) {
+  document.getElementById('group-title-display').textContent = `${group.emoji||'🎵'} ${group.name}`;
+  const members = group.members || {};
+  const count = Object.keys(members).length;
+  document.getElementById('group-sub').textContent = `${count} member${count!==1?'s':''}`;
+  const sorted = Object.entries(members).sort(([a],[b]) => a===currentUser.id?-1:b===currentUser.id?1:0);
+  document.getElementById('members-grid').innerHTML = sorted.map(([uid, m]) => buildCard(uid, m, uid===currentUser.id)).join('');
+}
+
+function buildCard(uid, m, me) {
+  const np = m.nowPlaying;
+  const sotd = m.sotd;
+  const npHtml = np ? `
+    <div class="member-np">
+      <div class="np-art ${np.isPlaying?'spinning':''}">
+        ${np.art?`<img src="${np.art}" alt=""/>`:'🎵'}
+      </div>
+      <div class="np-info">
+        <div class="np-label">${np.isPlaying?'▶ NOW PLAYING':'⏸ PAUSED'}</div>
+        <div class="np-track">${esc(np.name)}</div>
+        <div class="np-artist">${esc(np.artist)}</div>
+      </div>
+    </div>` : `<div class="idle-np">⏸ Not playing anything</div>`;
+
+  const sotdHtml = sotd ? `
+    <div class="member-sotd">
+      <div class="sotd-art-sm">${sotd.art?`<img src="${sotd.art}" alt=""/>`:'⭐'}</div>
+      <div>
+        <div class="sotd-label-sm">⭐ SONG OF THE DAY</div>
+        <div class="sotd-track-sm">${esc(sotd.name)} — ${esc(sotd.artist)}</div>
+      </div>
+    </div>` : '';
+
+  const ctrls = me ? `
+    <div class="my-controls">
+      <button class="ctrl-btn" onclick="pushMyData()">↻ Refresh</button>
+      <button class="ctrl-btn" onclick="openSotdModal()">⭐ Set SOTD</button>
+    </div>` : '';
+
+  return `
+    <div class="member-card ${me?'is-me':''}">
+      <div class="member-header">
+        <img class="member-avatar" src="${m.avatar||''}" onerror="this.style.opacity=0" alt="av"/>
+        <div>
+          <div class="member-name">${esc(m.name)}</div>
+          ${me?'<div class="member-you">You</div>':''}
+        </div>
+      </div>
+      ${npHtml}${sotdHtml}${ctrls}
+    </div>`;
+}
+
+// ── MY MUSIC ──
+window.pushMyData = async function() {
+  if (!currentGroupId || !currentUser) return;
+  const np = await fetchNP();
+  await update(ref(db, `groups/${currentGroupId}/members/${currentUser.id}`), { nowPlaying: np, lastSeen: Date.now() });
+};
+
+async function fetchNP() {
+  try {
+    const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing', { headers: { 'Authorization': 'Bearer ' + spotifyToken } });
+    if (res.status === 204 || res.status === 404) return null;
+    const data = await res.json();
+    if (!data?.item) return null;
+    return { name: data.item.name, artist: data.item.artists.map(a=>a.name).join(', '), art: data.item.album.images?.[1]?.url||null, isPlaying: data.is_playing };
+  } catch(e) { return null; }
+}
+
+// ── SOTD ──
+window.openSotdModal = function() {
+  openModal('modal-sotd');
+  document.getElementById('sotd-search-inp').value = '';
+  document.getElementById('sotd-results').innerHTML = '<div class="loading-txt">Start typing...</div>';
+  setTimeout(()=>document.getElementById('sotd-search-inp').focus(),100);
+};
+
+window.debounceSearch = function(val) {
+  clearTimeout(searchTimer);
+  if (!val.trim()) { document.getElementById('sotd-results').innerHTML = '<div class="loading-txt">Start typing...</div>'; return; }
+  searchTimer = setTimeout(()=>searchSongs(val), 400);
+};
+
+async function searchSongs(q) {
+  document.getElementById('sotd-results').innerHTML = '<div class="loading-txt">Searching...</div>';
+  try {
+    const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=6`, { headers: { 'Authorization': 'Bearer ' + spotifyToken } });
+    const data = await res.json();
+    const tracks = data.tracks?.items || [];
+    if (!tracks.length) { document.getElementById('sotd-results').innerHTML = '<div class="loading-txt">No results.</div>'; return; }
+    document.getElementById('sotd-results').innerHTML = tracks.map(t => {
+      const art = t.album.images?.[1]?.url;
+      const d = JSON.stringify({name:t.name,artist:t.artists.map(a=>a.name).join(', '),art:art||null}).replace(/"/g,'&quot;');
+      return `<div class="result-item" onclick="setSotd('${d}')">
+        <div class="result-art">${art?`<img src="${art}" alt=""/>`:'🎵'}</div>
+        <div><div class="result-title">${esc(t.name)}</div><div class="result-artist">${esc(t.artists.map(a=>a.name).join(', '))}</div></div>
+      </div>`;
+    }).join('');
+  } catch(e) { document.getElementById('sotd-results').innerHTML = '<div class="loading-txt">Search failed.</div>'; }
+}
+
+window.setSotd = async function(d) {
+  let track; try { track = JSON.parse(d.replace(/&quot;/g,'"')); } catch(e) { return; }
+  await update(ref(db, `groups/${currentGroupId}/members/${currentUser.id}`), { sotd: track });
+  closeModal('modal-sotd');
+};
+
+// ── INVITE ──
+window.copyInviteLink = function() {
+  navigator.clipboard.writeText(`${redirectUri}?group=${currentGroupId}`).then(()=>{
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 2500);
+  });
+};
+
+// ── UTILS ──
+function esc(s) { return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):''; }
+
+// ── INIT ──
+// Firebase config hardcoded
+const hardcodedConfig = {
+  apiKey: "AIzaSyDdmfszOUXijhoIK7BJ3aOegqNvDJooOaI",
+  databaseURL: "https://abmusic-826bb-default-rtdb.firebaseio.com",
+  projectId: "abmusic-826bb",
+  authDomain: "abmusic-826bb.firebaseapp.com"
+};
+localStorage.setItem('fb_config', JSON.stringify(hardcodedConfig));
+loadFirebaseConfig();
+checkSpotifyCallback();
+
+['modal-create','modal-join','modal-sotd'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => { if (e.target === document.getElementById(id)) closeModal(id); });
+});
+</script>
+</body>
+</html>
