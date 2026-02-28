@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎵 Music Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3a;
+    --green: #1DB954;
+    --pink: #ff4d8d;
+    --gold: #ffd700;
+    --text: #f0f0ff;
+    --muted: #7070a0;
+    --gradient: linear-gradient(135deg, #1DB954, #00c6ff);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+      radial-gradient(ellipse at 20% 20%, rgba(29,185,84,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(255,77,141,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(0,198,255,0.04) 0%, transparent 60%);
+    animation: bgPulse 8s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes bgPulse {
+    0% { transform: rotate(0deg) scale(1); }
+    100% { transform: rotate(5deg) scale(1.05); }
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-size: 1.6rem;
+    font-weight: 800;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -1px;
+  }
+
+  .logo span { font-family: 'DM Mono', monospace; font-weight: 300; }
+
+  .connect-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--green);
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 100px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .connect-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
+  .connect-btn.connected { background: var(--surface2); color: var(--green); border: 1px solid var(--green); }
+  .connect-btn.disconnect { background: var(--surface2); color: var(--pink); border: 1px solid var(--pink); }
+
+  /* SETUP SCREEN */
+  .setup-screen {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .setup-screen.hidden { display: none; }
+
+  .setup-icon { font-size: 4rem; margin-bottom: 16px; }
+  .setup-screen h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
+  .setup-screen p { color: var(--muted); margin-bottom: 32px; font-size: 0.95rem; line-height: 1.6; }
+
+  .steps {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+    text-align: left;
+  }
+
+  .step {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 12px;
+  }
+
+  .step h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; }
+  .step p { font-size: 0.8rem; color: var(--muted); line-height: 1.5; margin: 0; }
+  .step a { color: var(--green); text-decoration: none; }
+  .step a:hover { text-decoration: underline; }
+
+  .client-id-form {
+    display: flex;
+    gap: 12px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .client-id-form input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .client-id-form input:focus { border-color: var(--green); }
+  .client-id-form input::placeholder { color: var(--muted); }
+
+  .client-id-form button {
+    background: var(--gradient);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .client-id-form button:hover { transform: scale(1.03); }
+
+  /* MAIN APP */
+  .app-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .app-grid.hidden { display: none; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-label .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: blink 1.5s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  /* NOW PLAYING */
+  .now-playing-card {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #0f1f14, #0a0a1a);
+    border-color: rgba(29,185,84,0.3);
+  }
+
+  .now-playing-inner {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .vinyl {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #111;
+    position: relative;
+    flex-shrink: 0;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+
+  .vinyl img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .vinyl::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 3px solid #222;
+  }
+
+  .vinyl.spinning {
+    animation: spin 4s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .vinyl-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+  }
+
+  .now-playing-info { flex: 1; min-width: 0; }
+
+  .now-playing-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .now-playing-artist {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+
+  .now-playing-album {
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 16px;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--gradient);
+    border-radius: 2px;
+    transition: width 1s linear;
+  }
+
+  .progress-times {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .idle-msg {
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-style: italic;
+  }
+
+  /* SONG OF THE DAY */
+  .sotd-card { grid-column: 1; }
+
+  .sotd-display {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .sotd-art {
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+  }
+
+  .sotd-art img { width: 100%; height: 100%; object-fit: cover; }
+
+  .sotd-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
+  .sotd-artist { color: var(--muted); font-size: 0.85rem; }
+
+  .sotd-note {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+    font-style: italic;
+    border-left: 2px solid var(--gold);
+    padding-left: 12px;
+    margin-bottom: 16px;
+  }
+
+  .pick-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .pick-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* TOP SONGS */
+  .top-songs-card { grid-column: 2; }
+
+  .top-song {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .top-song:last-child { border-bottom: none; }
+  .top-song:hover { padding-left: 6px; }
+
+  .top-song-rank {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .top-song-rank.gold { color: var(--gold); }
+  .top-song-rank.silver { color: #c0c0c0; }
+  .top-song-rank.bronze { color: #cd7f32; }
+
+  .top-song-art {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--surface2);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+
+  .top-song-art img { width: 100%; height: 100%; object-fit: cover; }
+
+  .top-song-info { flex: 1; min-width: 0; }
+  .top-song-title { font-size: 0.88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .top-song-artist { font-size: 0.75rem; color: var(--muted); }
+
+  .sotd-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: rgba(255,215,0,0.15);
+    color: var(--gold);
+    border: 1px solid rgba(255,215,0,0.3);
+    padding: 2px 8px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.hidden { display: none; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .modal h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+  .modal p { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; }
+
+  .modal-search {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .modal-search:focus { border-color: var(--green); }
+
+  .search-results { display: flex; flex-direction: column; gap: 8px; }
+
+  .search-result {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: 1px solid transparent;
+  }
+
+  .search-result:hover { background: var(--surface2); border-color: var(--border); }
+
+  .search-result-art {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface2);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  .search-result-art img { width: 100%; height: 100%; object-fit: cover; }
+  .search-result-title { font-size: 0.9rem; font-weight: 600; }
+  .search-result-artist { font-size: 0.8rem; color: var(--muted); }
+
+  .modal-close {
+    width: 100%;
+    margin-top: 16px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover { border-color: var(--pink); color: var(--pink); }
+
+  .refresh-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-left: auto;
+    font-family: 'Syne', sans-serif;
+    transition: color 0.2s;
+  }
+
+  .refresh-btn:hover { color: var(--green); }
+
+  .loading {
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+  }
+
+  .error-msg {
+    color: var(--pink);
+    font-size: 0.8rem;
+    margin-top: 8px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  @media (max-width: 600px) {
+    .steps { flex-direction: column; }
+    .app-grid { grid-template-columns: 1fr; }
+    .now-playing-card, .sotd-card, .top-songs-card { grid-column: 1; }
+    .now-playing-inner { flex-direction: column; text-align: center; }
+    .client-id-form { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">music<span>.hub</span></div>
+    <div id="headerBtns">
+      <button class="connect-btn" id="connectBtn" onclick="startAuth()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+        Connect Spotify
+      </button>
+    </div>
+  </header>
+
+  <!-- SETUP SCREEN -->
+  <div class="setup-screen hidden" id="setupScreen">
+    <div class="setup-icon">🎵</div>
+    <h2>Connect Your Music</h2>
+    <p>Music Hub shows your now playing, lets you set a Song of the Day,<br>and displays your top tracks — all from Spotify.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Create a Spotify App</h4>
+        <p>Go to <a href="https://developer.spotify.com/dashboard" target="_blank">developer.spotify.com/dashboard</a>, log in, and click <strong>"Create App"</strong>. Name it anything (e.g. "Music Hub").</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Set the Redirect URI</h4>
+        <p>In your app settings, add this exact URL as a Redirect URI:<br><strong style="font-family:'DM Mono',monospace;font-size:0.75rem;word-break:break-all;" id="redirectUriDisplay"></strong></p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Paste Your Client ID</h4>
+        <p>Copy your <strong>Client ID</strong> from the app dashboard and paste it below to connect.</p>
+      </div>
+    </div>
+
+    <div class="client-id-form">
+      <input type="text" id="clientIdInput" placeholder="Paste your Spotify Client ID here..." />
+      <button onclick="saveClientId()">Connect →</button>
+    </div>
+    <p id="setupError" class="error-msg"></p>
+  </div>
+
+  <!-- MAIN APP -->
+  <div class="app-grid hidden" id="appGrid">
+
+    <!-- NOW PLAYING -->
+    <div class="card now-playing-card">
+      <div class="card-label">
+        <div class="dot" id="npDot"></div>
+        Now Playing
+        <button class="refresh-btn" onclick="fetchNowPlaying()">↻ refresh</button>
+      </div>
+      <div id="nowPlayingContent">
+        <div class="idle-msg">⏸ Nothing playing right now. Hit play on Spotify!</div>
+      </div>
+    </div>
+
+    <!-- SONG OF THE DAY -->
+    <div class="card sotd-card">
+      <div class="card-label">⭐ Song of the Day</div>
+      <div id="sotdContent">
+        <div class="sotd-display">
+          <div class="sotd-art">🎵</div>
+          <div>
+            <div class="sotd-title">No song picked yet</div>
+            <div class="sotd-artist">Choose your vibe for today</div>
+          </div>
+        </div>
+        <div class="sotd-note">"Pick a song that represents your day!"</div>
+        <button class="pick-btn" onclick="openSotdModal()">🎵 Pick Song of the Day</button>
+      </div>
+    </div>
+
+    <!-- TOP SONGS -->
+    <div class="card top-songs-card">
+      <div class="card-label">🔥 Your Top Tracks</div>
+      <div id="topTracksContent">
+        <div class="loading">Loading your top tracks...</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SOTD SEARCH MODAL -->
+<div class="modal-overlay hidden" id="sotdModal">
+  <div class="modal">
+    <h3>🎵 Pick Song of the Day</h3>
+    <p>Search for any song to set as your song of the day</p>
+    <input class="modal-search" id="sotdSearch" placeholder="Search for a song..." oninput="debounceSearch(this.value)" />
+    <div id="searchResults" class="search-results">
+      <div class="loading">Start typing to search...</div>
+    </div>
+    <button class="modal-close" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+  let token = null;
+  let clientId = '3fdee41ecbad4f8284015ac2ff9c2926';
+  let sotdTrack = null;
+  let searchTimeout = null;
+
+  const SCOPES = [
+    'user-read-currently-playing',
+    'user-read-playback-state',
+    'user-top-read',
+    'user-read-recently-played'
+  ].join(' ');
+
+  // Set redirect URI display
+  const redirectUri = window.location.href.split('#')[0].split('?')[0];
+  document.getElementById('redirectUriDisplay').textContent = redirectUri;
+
+  // Check for token in URL hash (after Spotify redirect)
+  function checkToken() {
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const accessToken = params.get('access_token');
+    
+    if (accessToken) {
+      token = accessToken;
+      // Clean URL
+      history.replaceState(null, null, window.location.pathname);
+      
+      // Get stored client ID
+      clientId = sessionStorage.getItem('spotify_client_id');
+      showApp();
+      return true;
+    }
+    return false;
+  }
+
+  function saveClientId() {
+    const input = document.getElementById('clientIdInput').value.trim();
+    if (!input || input.length < 10) {
+      document.getElementById('setupError').textContent = '⚠ Please enter a valid Client ID (it should be 32 characters long).';
+      return;
+    }
+    clientId = input;
+    sessionStorage.setItem('spotify_client_id', input);
+    startAuth();
+  }
+
+  function startAuth() {
+    if (!clientId) {
+      clientId = sessionStorage.getItem('spotify_client_id');
+    }
+    if (!clientId) {
+      // Show setup
+      return;
+    }
+    const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(SCOPES)}&show_dialog=true`;
+    window.location.href = authUrl;
+  }
+
+  function showApp() {
+    document.getElementById('setupScreen').classList.add('hidden');
+    document.getElementById('appGrid').classList.remove('hidden');
+    
+    const btn = document.getElementById('connectBtn');
+    btn.textContent = '✓ Connected';
+    btn.className = 'connect-btn connected';
+    btn.onclick = disconnect;
+
+    fetchNowPlaying();
+    fetchTopTracks();
+    
+    // Auto-refresh now playing every 30s
+    setInterval(fetchNowPlaying, 30000);
+  }
+
+  function disconnect() {
+    token = null;
+    sessionStorage.removeItem('spotify_client_id');
+    location.reload();
+  }
+
+  async function fetchNowPlaying() {
+    if (!token) return;
+    try {
+      const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+
+      if (res.status === 204 || res.status === 404) {
+        showIdleState();
+        return;
+      }
+
+      const data = await res.json();
+      
+      if (!data || !data.item) {
+        showIdleState();
+        return;
+      }
+
+      const track = data.item;
+      const progress = data.progress_ms || 0;
+      const duration = track.duration_ms;
+      const isPlaying = data.is_playing;
+      const progressPct = Math.min((progress / duration) * 100, 100);
+
+      const artUrl = track.album.images?.[0]?.url;
+      
+      document.getElementById('nowPlayingContent').innerHTML = `
+        <div class="now-playing-inner">
+          <div class="vinyl ${isPlaying ? 'spinning' : ''}">
+            ${artUrl ? `<img src="${artUrl}" alt="album art"/>` : '<div class="vinyl-placeholder">🎵</div>'}
+          </div>
+          <div class="now-playing-info">
+            <div class="now-playing-title">${escHtml(track.name)}</div>
+            <div class="now-playing-artist">${escHtml(track.artists.map(a=>a.name).join(', '))}</div>
+            <div class="now-playing-album">${escHtml(track.album.name)}</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${progressPct}%"></div>
+            </div>
+            <div class="progress-times">
+              <span>${msToTime(progress)}</span>
+              <span>${msToTime(duration)}</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('npDot').style.background = isPlaying ? '#1DB954' : '#ff4d8d';
+    } catch(e) {
+      showIdleState();
+    }
+  }
+
+  function showIdleState() {
+    document.getElementById('nowPlayingContent').innerHTML = `<div class="idle-msg">⏸ Nothing playing right now. Open Spotify and hit play!</div>`;
+    document.getElementById('npDot').style.background = '#7070a0';
+  }
+
+  async function fetchTopTracks() {
+    if (!token) return;
+    try {
+      const res = await fetch('https://api.spotify.com/v1/me/top/tracks?limit=7&time_range=short_term', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      
+      if (!data.items?.length) {
+        document.getElementById('topTracksContent').innerHTML = `<div class="loading">No top tracks yet — keep listening!</div>`;
+        return;
+      }
+
+      const rankClasses = ['gold','silver','bronze','','','',''];
+      const rankSymbols = ['🥇','🥈','🥉','4','5','6','7'];
+
+      document.getElementById('topTracksContent').innerHTML = data.items.map((track, i) => {
+        const art = track.album.images?.[2]?.url || track.album.images?.[0]?.url;
+        const isSotd = sotdTrack && sotdTrack.id === track.id;
+        return `
+          <div class="top-song" onclick="setAsSotd(${JSON.stringify({id:track.id,name:track.name,artist:track.artists.map(a=>a.name).join(', '),art:art||null}).replace(/"/g,'&quot;')})">
+            <div class="top-song-rank ${rankClasses[i]}">${rankSymbols[i]}</div>
+            <div class="top-song-art">
+              ${art ? `<img src="${art}" alt="art"/>` : '🎵'}
+            </div>
+            <div class="top-song-info">
+              <div class="top-song-title">${escHtml(track.name)}</div>
+              <div class="top-song-artist">${escHtml(track.artists.map(a=>a.name).join(', '))}</div>
+            </div>
+            ${isSotd ? '<span class="sotd-tag">⭐ SOTD</span>' : ''}
+          </div>
+        `;
+      }).join('');
+    } catch(e) {
+      document.getElementById('topTracksContent').innerHTML = `<div class="loading">Couldn't load top tracks. Try reconnecting.</div>`;
+    }
+  }
+
+  function openSotdModal() {
+    document.getElementById('sotdModal').classList.remove('hidden');
+    document.getElementById('sotdSearch').value = '';
+    document.getElementById('searchResults').innerHTML = '<div class="loading">Start typing to search...</div>';
+    setTimeout(() => document.getElementById('sotdSearch').focus(), 100);
+  }
+
+  function closeModal() {
+    document.getElementById('sotdModal').classList.add('hidden');
+  }
+
+  function debounceSearch(val) {
+    clearTimeout(searchTimeout);
+    if (!val.trim()) {
+      document.getElementById('searchResults').innerHTML = '<div class="loading">Start typing to search...</div>';
+      return;
+    }
+    searchTimeout = setTimeout(() => searchTracks(val), 400);
+  }
+
+  async function searchTracks(query) {
+    if (!token) return;
+    document.getElementById('searchResults').innerHTML = '<div class="loading">Searching...</div>';
+    try {
+      const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=6`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      const tracks = data.tracks?.items || [];
+
+      if (!tracks.length) {
+        document.getElementById('searchResults').innerHTML = '<div class="loading">No results found.</div>';
+        return;
+      }
+
+      document.getElementById('searchResults').innerHTML = tracks.map(track => {
+        const art = track.album.images?.[1]?.url;
+        const trackData = JSON.stringify({id:track.id,name:track.name,artist:track.artists.map(a=>a.name).join(', '),art:art||null}).replace(/"/g,'&quot;');
+        return `
+          <div class="search-result" onclick="setAsSotd('${trackData}')">
+            <div class="search-result-art">
+              ${art ? `<img src="${art}" alt="art"/>` : '🎵'}
+            </div>
+            <div>
+              <div class="search-result-title">${escHtml(track.name)}</div>
+              <div class="search-result-artist">${escHtml(track.artists.map(a=>a.name).join(', '))}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } catch(e) {
+      document.getElementById('searchResults').innerHTML = '<div class="loading">Search failed. Try again.</div>';
+    }
+  }
+
+  function setAsSotd(trackDataOrStr) {
+    let track = trackDataOrStr;
+    if (typeof track === 'string') {
+      try { track = JSON.parse(track.replace(/&quot;/g, '"')); } catch(e) { return; }
+    }
+    sotdTrack = track;
+    
+    document.getElementById('sotdContent').innerHTML = `
+      <div class="sotd-display">
+        <div class="sotd-art">
+          ${track.art ? `<img src="${track.art}" alt="art"/>` : '🎵'}
+        </div>
+        <div>
+          <div class="sotd-title">${escHtml(track.name)}</div>
+          <div class="sotd-artist">${escHtml(track.artist)}</div>
+        </div>
+      </div>
+      <div class="sotd-note">"My song of the day — this one just hits different. 🎧"</div>
+      <button class="pick-btn" onclick="openSotdModal()">🔄 Change Song</button>
+    `;
+    
+    closeModal();
+    fetchTopTracks(); // Refresh to show SOTD tag
+  }
+
+  function msToTime(ms) {
+    const s = Math.floor(ms / 1000);
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${sec.toString().padStart(2,'0')}`;
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Close modal on overlay click
+  document.getElementById('sotdModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // Init
+  if (!checkToken()) {
+    // Show setup screen — already visible by default
+  }
+</script>
+</body>
+</html>
