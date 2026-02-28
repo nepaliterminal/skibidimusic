@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎵 skibidi music</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080810;--s1:#0e0e1a;--s2:#16162a;--s3:#1e1e35;
+  --border:#2a2a45;--green:#1DB954;--pink:#ff4d8d;
+  --gold:#ffd700;--purple:#a855f7;--blue:#38bdf8;
+  --text:#eeeeff;--muted:#6060a0;
+  --font:'Bricolage Grotesque',sans-serif;--mono:'DM Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 15% 15%,rgba(29,185,84,.06) 0%,transparent 45%),
+             radial-gradient(ellipse at 85% 85%,rgba(168,85,247,.06) 0%,transparent 45%),
+             radial-gradient(ellipse at 50% 50%,rgba(56,189,248,.03) 0%,transparent 60%);
+  pointer-events:none;z-index:0;}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 16px;position:relative;z-index:1;}
+.screen{display:none;}.screen.active{display:block;}
+/* HEADER */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px;}
+.logo{font-size:1.4rem;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.user-pill{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--border);border-radius:100px;padding:5px 12px 5px 5px;}
+.user-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--s3);}
+.user-name{font-size:0.82rem;font-weight:600;}
+.online-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);}
+.hbtn{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:7px 13px;color:var(--text);font-family:var(--font);font-size:0.78rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.hbtn:hover{border-color:var(--green);color:var(--green);}
+/* SETUP */
+.setup-box{background:var(--s1);border:1px solid var(--border);border-radius:24px;padding:48px 40px;text-align:center;max-width:660px;margin:40px auto;}
+.setup-box .icon{font-size:3.5rem;margin-bottom:20px;}
+.setup-box h1{font-size:2rem;font-weight:800;letter-spacing:-1px;margin-bottom:10px;}
+.setup-box>p{color:var(--muted);line-height:1.7;margin-bottom:28px;font-size:.95rem;}
+.steps-row{display:flex;gap:12px;margin-bottom:28px;text-align:left;}
+.step-box{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:16px;padding:18px;}
+.step-num{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue));display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:#000;margin-bottom:10px;}
+.step-box h4{font-size:.85rem;font-weight:700;margin-bottom:6px;}
+.step-box p{font-size:.78rem;color:var(--muted);line-height:1.5;margin:0;}
+.step-box a{color:var(--green);text-decoration:none;}
+.fb-fields{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;text-align:left;}
+.flabel{font-size:.72rem;color:var(--muted);font-family:var(--mono);margin-bottom:3px;}
+.inp{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;color:var(--text);font-family:var(--mono);font-size:.82rem;outline:none;transition:border-color .2s;}
+.inp:focus{border-color:var(--green);}
+.inp::placeholder{color:var(--muted);}
+.btn{background:linear-gradient(135deg,var(--green),var(--blue));border:none;border-radius:12px;padding:11px 22px;color:#000;font-family:var(--font);font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.btn:hover{transform:scale(1.03);filter:brightness(1.1);}
+.btn-g{background:transparent;border:1px solid var(--border);border-radius:12px;padding:10px 18px;color:var(--text);font-family:var(--font);font-weight:600;font-size:.85rem;cursor:pointer;transition:all .2s;}
+.btn-g:hover{border-color:var(--green);color:var(--green);}
+.err{color:var(--pink);font-size:.78rem;font-family:var(--mono);margin-top:8px;}
+/* LOGIN */
+.login-c{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;}
+.login-c h1{font-size:3rem;font-weight:800;letter-spacing:-2px;background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;}
+.login-c p{color:var(--muted);font-size:1rem;margin-bottom:36px;line-height:1.6;}
+.sp-btn{display:flex;align-items:center;gap:12px;background:var(--green);color:#000;border:none;padding:16px 32px;border-radius:100px;font-family:var(--font);font-weight:700;font-size:1rem;cursor:pointer;transition:all .2s;}
+.sp-btn:hover{transform:scale(1.05);filter:brightness(1.1);}
+/* HOME */
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;}
+.home-card{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:24px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.home-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s;}
+.home-card.c::before{background:linear-gradient(135deg,rgba(29,185,84,.08),transparent);}
+.home-card.j::before{background:linear-gradient(135deg,rgba(168,85,247,.08),transparent);}
+.home-card:hover::before{opacity:1;}
+.home-card:hover{border-color:var(--green);transform:translateY(-2px);}
+.home-card.j:hover{border-color:var(--purple);}
+.hci{font-size:2.2rem;margin-bottom:14px;}
+.home-card h3{font-size:1.1rem;font-weight:800;margin-bottom:5px;}
+.home-card p{color:var(--muted);font-size:.82rem;line-height:1.5;}
+.sec-lbl{font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.group-item{display:flex;align-items:center;gap:14px;padding:14px;background:var(--s1);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;cursor:pointer;transition:all .2s;}
+.group-item:hover{border-color:var(--green);background:var(--s2);}
+.group-emoji{font-size:1.4rem;width:42px;height:42px;background:var(--s2);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.gi{flex:1;}
+.gn{font-size:.92rem;font-weight:700;margin-bottom:2px;}
+.gm{font-size:.75rem;color:var(--muted);}
+/* MODAL */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(10px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
+.mbg.hidden{display:none;}
+.modal{background:var(--s1);border:1px solid var(--border);border-radius:24px;padding:28px;width:100%;max-width:460px;max-height:88vh;overflow-y:auto;}
+.modal h3{font-size:1.2rem;font-weight:800;margin-bottom:6px;}
+.modal>.mp{color:var(--muted);font-size:.83rem;margin-bottom:20px;line-height:1.5;}
+.emoji-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.eo{width:42px;height:42px;background:var(--s2);border:2px solid transparent;border-radius:12px;font-size:1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.eo:hover,.eo.sel{border-color:var(--green);background:var(--s3);}
+.mact{display:flex;gap:10px;margin-top:18px;}
+/* GROUP HEADER */
+.gh{display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.back-btn{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;color:var(--text);font-family:var(--font);font-size:.8rem;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.back-btn:hover{border-color:var(--green);color:var(--green);}
+.gta{flex:1;}
+.gt{font-size:1.4rem;font-weight:800;letter-spacing:-.5px;}
+.gsub{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.inv-btn{display:flex;align-items:center;gap:7px;background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:9px 14px;color:var(--text);font-family:var(--font);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.inv-btn:hover{border-color:var(--purple);color:var(--purple);}
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:4px;overflow-x:auto;}
+.tab{flex:1;padding:8px 6px;background:transparent;border:none;color:var(--muted);font-family:var(--font);font-weight:600;font-size:.75rem;cursor:pointer;border-radius:10px;transition:all .2s;text-align:center;white-space:nowrap;min-width:70px;}
+.tab.active{background:var(--s2);color:var(--text);}
+.tp{display:none;}.tp.active{display:block;}
+/* MEMBER CARDS */
+.mg{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:16px;}
+.mc{background:var(--s1);border:1px solid var(--border);border-radius:22px;overflow:hidden;transition:transform .2s,border-color .2s;}
+.mc:hover{transform:translateY(-2px);}
+.mc.me{border-color:rgba(29,185,84,.35);}
+/* Banner */
+.cb{position:relative;height:140px;background:var(--s2);overflow:hidden;}
+.cba{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(.55) saturate(1.3);}
+.cbo{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,16,.97) 0%,rgba(8,8,16,.2) 60%,transparent 100%);}
+.cbe{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;background:linear-gradient(135deg,var(--s2),var(--s3));}
+.cbnp{position:absolute;bottom:10px;left:14px;right:14px;}
+.nps{font-size:.57rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;display:flex;align-items:center;gap:5px;}
+.nps.pl{color:var(--green);}
+.nps.pa{color:var(--muted);}
+.npd{width:5px;height:5px;border-radius:50%;background:currentColor;}
+.nps.pl .npd{animation:blink 1.2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.nsn{font-size:1rem;font-weight:800;letter-spacing:-.3px;line-height:1.2;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nsar{font-size:.76rem;color:rgba(255,255,255,.55);}
+/* EQ bars */
+.eq{display:flex;align-items:flex-end;gap:2px;height:14px;margin-left:auto;}
+.eqb{width:3px;background:var(--green);border-radius:2px;animation:eq .6s ease-in-out infinite alternate;}
+.eqb:nth-child(1){height:60%;animation-delay:0s}
+.eqb:nth-child(2){height:100%;animation-delay:.15s}
+.eqb:nth-child(3){height:40%;animation-delay:.3s}
+.eqb:nth-child(4){height:80%;animation-delay:.1s}
+@keyframes eq{from{transform:scaleY(.4)}to{transform:scaleY(1)}}
+/* Progress */
+.npbar{height:2px;background:rgba(255,255,255,.15);border-radius:1px;margin-top:7px;overflow:hidden;}
+.npbf{height:100%;background:var(--green);border-radius:1px;transition:width 1s linear;}
+/* Card body */
+.cbd{padding:13px 15px 15px;}
+.cur{display:flex;align-items:center;gap:10px;margin-bottom:11px;}
+.mav{width:34px;height:34px;border-radius:50%;object-fit:cover;background:var(--s3);flex-shrink:0;border:2px solid var(--border);}
+.mnw{flex:1;}
+.mn{font-size:.88rem;font-weight:700;}
+.mst{font-size:.68rem;color:var(--muted);}
+.mebadge{font-size:.62rem;color:var(--green);font-weight:700;background:rgba(29,185,84,.12);padding:2px 8px;border-radius:100px;white-space:nowrap;}
+/* SOTD */
+.csotd{display:flex;align-items:center;gap:10px;background:var(--s2);border:1px solid rgba(255,215,0,.2);border-radius:12px;padding:10px 12px;margin-bottom:10px;}
+.scov{width:42px;height:42px;border-radius:8px;background:var(--s3);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.scov img{width:100%;height:100%;object-fit:cover;}
+.stxt{flex:1;min-width:0;}
+.sbdg{font-size:.56rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:1px;}
+.ssng{font-size:.83rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sart{font-size:.71rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.se{color:var(--muted);font-size:.76rem;font-style:italic;text-align:center;padding:9px;background:var(--s2);border-radius:10px;margin-bottom:10px;}
+/* Top tracks */
+.ttm{margin-bottom:10px;}
+.ttl{font-size:.59rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.ttr{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.ttr:last-child{border-bottom:none;}
+.ttn{font-size:.68rem;color:var(--muted);width:14px;text-align:center;font-family:var(--mono);flex-shrink:0;}
+.tta{width:28px;height:28px;border-radius:5px;overflow:hidden;background:var(--s3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.8rem;}
+.tta img{width:100%;height:100%;object-fit:cover;}
+.tti{flex:1;min-width:0;}
+.ttnm{font-size:.76rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ttar{font-size:.65rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.exp{font-size:.52rem;background:var(--muted);color:var(--bg);padding:1px 4px;border-radius:3px;font-weight:700;margin-left:3px;vertical-align:middle;}
+/* Reactions */
+.rrow{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap;}
+.rbtn{display:flex;align-items:center;gap:4px;background:var(--s2);border:1px solid var(--border);border-radius:100px;padding:4px 10px;font-size:.76rem;cursor:pointer;transition:all .15s;font-family:var(--font);color:var(--text);}
+.rbtn:hover{border-color:var(--green);transform:scale(1.05);}
+.rbtn.rx{background:rgba(29,185,84,.12);border-color:var(--green);color:var(--green);}
+.rc{font-size:.7rem;font-weight:700;color:var(--muted);}
+.rbtn.rx .rc{color:var(--green);}
+/* Controls */
+.ctrls{display:flex;gap:6px;flex-wrap:wrap;}
+.ctb{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:8px 4px;color:var(--text);font-family:var(--font);font-size:.72rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;min-width:55px;text-align:center;}
+.ctb:hover{border-color:var(--green);color:var(--green);}
+.ctb.w:hover{border-color:var(--gold);color:var(--gold);}
+/* Stat pills */
+.spills{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap;}
+.spill{background:var(--s2);border:1px solid var(--border);border-radius:100px;padding:3px 9px;font-size:.68rem;color:var(--muted);white-space:nowrap;}
+/* CHAT */
+.chat-c{background:var(--s1);border:1px solid var(--border);border-radius:20px;overflow:hidden;height:500px;display:flex;flex-direction:column;}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.chat-msgs::-webkit-scrollbar{width:4px;}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.cmsg{display:flex;gap:10px;align-items:flex-start;}
+.cmsg.mine{flex-direction:row-reverse;}
+.cav{width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--s3);flex-shrink:0;margin-top:2px;}
+.cbw{max-width:75%;}
+.cnm{font-size:.65rem;color:var(--muted);margin-bottom:3px;font-weight:600;}
+.cmsg.mine .cnm{text-align:right;}
+.cbb{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:8px 13px;font-size:.84rem;line-height:1.4;word-break:break-word;}
+.cmsg.mine .cbb{background:rgba(29,185,84,.15);border-color:rgba(29,185,84,.3);}
+.ct{font-size:.6rem;color:var(--muted);margin-top:3px;font-family:var(--mono);}
+.cmsg.mine .ct{text-align:right;}
+.csys{text-align:center;font-size:.7rem;color:var(--muted);padding:4px;font-style:italic;}
+.ci-row{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border);}
+.ci{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:100px;padding:9px 16px;color:var(--text);font-family:var(--font);font-size:.85rem;outline:none;transition:border-color .2s;}
+.ci:focus{border-color:var(--green);}
+.cs{background:var(--green);border:none;border-radius:100px;padding:9px 18px;color:#000;font-family:var(--font);font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;}
+.cs:hover{filter:brightness(1.1);}
+/* Leaderboard */
+.lb{display:flex;flex-direction:column;gap:10px;}
+.lbr{display:flex;align-items:center;gap:14px;background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:13px;}
+.lbrnk{font-size:1.3rem;width:32px;text-align:center;flex-shrink:0;}
+.lbav{width:38px;height:38px;border-radius:50%;object-fit:cover;background:var(--s3);flex-shrink:0;}
+.lbi{flex:1;}
+.lbn{font-size:.9rem;font-weight:700;margin-bottom:2px;}
+.lbs{font-size:.75rem;color:var(--muted);}
+.lbsc{font-size:1.1rem;font-weight:800;color:var(--gold);font-family:var(--mono);}
+/* Stats */
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px;}
+.sc{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:18px;text-align:center;}
+.sv{font-size:1.8rem;font-weight:800;letter-spacing:-1px;margin-bottom:4px;}
+.sl{font-size:.72rem;color:var(--muted);font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+.ssb{font-size:.75rem;color:var(--muted);margin-top:4px;}
+/* Vote */
+.vs{background:var(--s1);border:1px solid rgba(255,215,0,.2);border-radius:16px;padding:18px;margin-bottom:20px;}
+.vt{font-size:.9rem;font-weight:800;margin-bottom:4px;}
+.vsb{font-size:.75rem;color:var(--muted);margin-bottom:16px;}
+.vtr{display:flex;align-items:center;gap:12px;padding:10px;background:var(--s2);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all .15s;}
+.vtr:hover{border-color:var(--gold);}
+.vtr.vd{border-color:var(--gold);background:rgba(255,215,0,.05);}
+.vta{width:40px;height:40px;border-radius:8px;overflow:hidden;background:var(--s3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.vta img{width:100%;height:100%;object-fit:cover;}
+.vti{flex:1;min-width:0;}
+.vtname{font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vtby{font-size:.7rem;color:var(--muted);}
+.vtc{font-size:1rem;font-weight:800;color:var(--gold);font-family:var(--mono);}
+.vbar-w{height:3px;background:var(--border);border-radius:2px;margin-top:5px;overflow:hidden;}
+.vbar{height:100%;background:var(--gold);border-radius:2px;transition:width .5s ease;}
+/* Activity */
+.af{display:flex;flex-direction:column;gap:8px;}
+.ai{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--s1);border:1px solid var(--border);border-radius:12px;}
+.aic{font-size:1.2rem;width:32px;text-align:center;flex-shrink:0;}
+.ait{flex:1;font-size:.82rem;line-height:1.4;}
+.ait strong{color:var(--text);}
+.aim{font-size:.65rem;color:var(--muted);font-family:var(--mono);white-space:nowrap;}
+/* Profile */
+.cprow{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.copt{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .15s;}
+.copt.sel,.copt:hover{border-color:white;transform:scale(1.15);}
+/* Search */
+.si{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;color:var(--text);font-family:var(--font);font-size:.88rem;outline:none;margin-bottom:12px;transition:border-color .2s;}
+.si:focus{border-color:var(--green);}
+.sr{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;}
+.ri{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;cursor:pointer;border:1px solid transparent;transition:all .15s;}
+.ri:hover{background:var(--s2);border-color:var(--border);}
+.ra{width:44px;height:44px;border-radius:8px;background:var(--s2);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.3rem;}
+.ra img{width:100%;height:100%;object-fit:cover;}
+.rt{font-size:.88rem;font-weight:600;}
+.rar{font-size:.76rem;color:var(--muted);}
+.ltxt{color:var(--muted);font-size:.85rem;text-align:center;padding:20px;}
+/* Filter/sort */
+.msrch{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:100px;padding:9px 16px;color:var(--text);font-family:var(--font);font-size:.82rem;outline:none;transition:border-color .2s;}
+.msrch:focus{border-color:var(--green);}
+.sbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.slbl{font-size:.7rem;color:var(--muted);font-weight:600;white-space:nowrap;}
+.sbtn{background:var(--s2);border:1px solid var(--border);border-radius:100px;padding:5px 12px;color:var(--muted);font-family:var(--font);font-size:.72rem;cursor:pointer;transition:all .15s;}
+.sbtn.ac{border-color:var(--green);color:var(--green);}
+/* NP Full */
+#nf-art{width:200px;height:200px;border-radius:20px;overflow:hidden;background:var(--s2);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:4rem;}
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:#000;font-weight:700;font-size:.85rem;padding:10px 24px;border-radius:100px;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:999;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+@media(max-width:600px){
+  .home-grid{grid-template-columns:1fr;}
+  .steps-row{flex-direction:column;}
+  .mg{grid-template-columns:1fr;}
+  .login-c h1{font-size:2rem;}
+  .sg{grid-template-columns:1fr 1fr;}
+  .tabs{overflow-x:auto;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- FIREBASE SETUP -->
+<div class="screen" id="screen-firebase">
+  <div class="setup-box">
+    <div class="icon">🔥</div><h1>One-time Setup</h1>
+    <p>Groups are saved in Firebase (free). Takes 3 minutes — you only do this once.</p>
+    <div class="steps-row">
+      <div class="step-box"><div class="step-num">1</div><h4>Create Firebase Project</h4><p>Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → "Add project"</p></div>
+      <div class="step-box"><div class="step-num">2</div><h4>Add Web App</h4><p>Click the <strong>&lt;/&gt;</strong> icon → Config tab → copy the values below</p></div>
+      <div class="step-box"><div class="step-num">3</div><h4>Enable Realtime DB</h4><p>Sidebar → Realtime Database → Create database → <strong>test mode</strong></p></div>
+    </div>
+    <div class="fb-fields">
+      <div><div class="flabel">apiKey</div><input class="inp" id="fb-apiKey" placeholder="AIzaSy..."/></div>
+      <div><div class="flabel">databaseURL</div><input class="inp" id="fb-dbUrl" placeholder="https://your-project-default-rtdb.firebaseio.com"/></div>
+      <div><div class="flabel">projectId</div><input class="inp" id="fb-projectId" placeholder="your-project-id"/></div>
+    </div>
+    <button class="btn" onclick="saveFirebaseConfig()" style="width:100%">Save & Continue →</button>
+    <p class="err" id="fb-err"></p>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="screen" id="screen-login">
+  <div class="login-c">
+    <div style="font-size:3rem;margin-bottom:16px">🎵</div>
+    <h1>skibidi music</h1>
+    <p>Sign in with Spotify to see your music,<br>create groups and share vibes with your crew.</p>
+    <button class="sp-btn" onclick="startSpotifyAuth()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+      Sign in with Spotify
+    </button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="screen" id="screen-home">
+  <div class="header">
+    <div class="logo">🎵 skibidi music</div>
+    <div class="header-right">
+      <button class="hbtn" onclick="openModal('modal-profile')">⚙️ Profile</button>
+      <div class="user-pill">
+        <div class="online-dot"></div>
+        <img class="user-avatar" id="home-avatar" src="" alt="av"/>
+        <span class="user-name" id="home-name"></span>
+        <button style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.72rem;margin-left:4px;font-family:var(--font);transition:color .2s" onmouseover="this.style.color='var(--pink)'" onmouseout="this.style.color='var(--muted)'" onclick="logout()">sign out</button>
+      </div>
+    </div>
+  </div>
+  <div class="home-grid">
+    <div class="home-card c" onclick="openModal('modal-create')"><div class="hci">➕</div><h3>Create a Group</h3><p>Start a music group and invite classmates with a link.</p></div>
+    <div class="home-card j" onclick="openModal('modal-join')"><div class="hci">🔗</div><h3>Join via Link</h3><p>Have an invite link? Paste it here to jump in.</p></div>
+  </div>
+  <div class="sec-lbl">Your Groups</div>
+  <div id="my-groups-list"><div class="ltxt">Loading...</div></div>
+</div>
+
+<!-- GROUP -->
+<div class="screen" id="screen-group">
+  <div class="header">
+    <div class="logo">🎵 skibidi music</div>
+    <div class="header-right">
+      <button class="hbtn" onclick="openModal('modal-profile')">⚙️ Profile</button>
+      <div class="user-pill">
+        <div class="online-dot"></div>
+        <img class="user-avatar" id="group-avatar" src="" alt="av"/>
+        <span class="user-name" id="group-username"></span>
+        <button style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.72rem;margin-left:4px;font-family:var(--font)" onmouseover="this.style.color='var(--pink)'" onmouseout="this.style.color='var(--muted)'" onclick="logout()">sign out</button>
+      </div>
+    </div>
+  </div>
+  <div class="gh">
+    <button class="back-btn" onclick="goHome()">← Back</button>
+    <div class="gta">
+      <div class="gt" id="gtitle"></div>
+      <div class="gsub"><span id="gmcount"></span><span>•</span><span style="color:var(--green)" id="gonline"></span></div>
+    </div>
+    <button class="inv-btn" onclick="copyInviteLink()">🔗 Invite</button>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('members')">👥 Members</button>
+    <button class="tab" onclick="switchTab('chat')">💬 Chat<span id="cbadge" style="display:none;background:var(--pink);color:#fff;font-size:.58rem;font-weight:800;padding:1px 5px;border-radius:100px;margin-left:3px"></span></button>
+    <button class="tab" onclick="switchTab('vote')">⭐ Vote</button>
+    <button class="tab" onclick="switchTab('stats')">📊 Stats</button>
+    <button class="tab" onclick="switchTab('activity')">📋 Activity</button>
+    <button class="tab" onclick="switchTab('leaderboard')">🏆 Board</button>
+  </div>
+  <div class="tp active" id="tp-members">
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+      <input class="msrch" id="msrch" placeholder="🔍 Search members..." oninput="filterMembers(this.value)" style="flex:1;min-width:180px"/>
+      <div class="sbar">
+        <span class="slbl">Sort:</span>
+        <button class="sbtn ac" onclick="setSort('default',this)">Default</button>
+        <button class="sbtn" onclick="setSort('playing',this)">Playing</button>
+        <button class="sbtn" onclick="setSort('name',this)">Name</button>
+      </div>
+    </div>
+    <div class="mg" id="mg"></div>
+  </div>
+  <div class="tp" id="tp-chat">
+    <div class="chat-c">
+      <div class="chat-msgs" id="chat-msgs"></div>
+      <div class="ci-row">
+        <input class="ci" id="ci" placeholder="Say something..." onkeydown="if(event.key==='Enter')sendChat()" maxlength="300"/>
+        <button class="cs" onclick="sendChat()">Send</button>
+      </div>
+    </div>
+  </div>
+  <div class="tp" id="tp-vote">
+    <div class="vs"><div class="vt">⭐ Group SOTD Vote</div><div class="vsb">Vote for the best Song of the Day</div><div id="vtracks"></div></div>
+  </div>
+  <div class="tp" id="tp-stats">
+    <div class="sg" id="sgrid"></div>
+    <div class="sec-lbl" style="margin-top:8px">Top Artists in Group</div>
+    <div id="talist"></div>
+  </div>
+  <div class="tp" id="tp-activity"><div class="af" id="afeed"></div></div>
+  <div class="tp" id="tp-leaderboard"><div class="lb" id="lboard"></div></div>
+</div>
+</div><!-- /wrap -->
+
+<!-- MODALS -->
+<div class="mbg hidden" id="modal-create">
+  <div class="modal">
+    <h3>Create a Group</h3><p class="mp">Give it a name and pick a vibe.</p>
+    <div class="emoji-row">
+      <div class="eo sel" data-e="🎵" onclick="selEmoji(this)">🎵</div>
+      <div class="eo" data-e="🔥" onclick="selEmoji(this)">🔥</div>
+      <div class="eo" data-e="💿" onclick="selEmoji(this)">💿</div>
+      <div class="eo" data-e="🎧" onclick="selEmoji(this)">🎧</div>
+      <div class="eo" data-e="🎸" onclick="selEmoji(this)">🎸</div>
+      <div class="eo" data-e="🎤" onclick="selEmoji(this)">🎤</div>
+      <div class="eo" data-e="🌊" onclick="selEmoji(this)">🌊</div>
+      <div class="eo" data-e="⚡" onclick="selEmoji(this)">⚡</div>
+      <div class="eo" data-e="🌙" onclick="selEmoji(this)">🌙</div>
+      <div class="eo" data-e="🏆" onclick="selEmoji(this)">🏆</div>
+    </div>
+    <input class="inp" id="gni" placeholder="e.g. Period 3 Vibes" style="margin-bottom:8px"/>
+    <div class="mact"><button class="btn-g" onclick="closeModal('modal-create')">Cancel</button><button class="btn" onclick="createGroup()">Create →</button></div>
+    <p class="err" id="cerr"></p>
+  </div>
+</div>
+<div class="mbg hidden" id="modal-join">
+  <div class="modal">
+    <h3>Join via Link</h3><p class="mp">Paste the invite link.</p>
+    <input class="inp" id="jli" placeholder="https://yoursite.netlify.app?group=..." style="margin-bottom:8px"/>
+    <div class="mact"><button class="btn-g" onclick="closeModal('modal-join')">Cancel</button><button class="btn" onclick="joinViaLink()">Join →</button></div>
+    <p class="err" id="jerr"></p>
+  </div>
+</div>
+<div class="mbg hidden" id="modal-sotd">
+  <div class="modal">
+    <h3>⭐ Pick Song of the Day</h3><p class="mp">Search Spotify for your SOTD.</p>
+    <input class="si" id="ssi" placeholder="Search songs..." oninput="dSearch(this.value)"/>
+    <div class="sr" id="sres"><div class="ltxt">Start typing...</div></div>
+    <div style="margin-top:14px"><button class="btn-g" onclick="closeModal('modal-sotd')" style="width:100%">Cancel</button></div>
+  </div>
+</div>
+<div class="mbg hidden" id="modal-profile">
+  <div class="modal">
+    <h3>⚙️ Your Profile</h3><p class="mp">Customize how you appear.</p>
+    <div class="flabel" style="margin-bottom:6px">Status / Bio</div>
+    <input class="inp" id="pbio" placeholder="e.g. always on shuffle 🔀" style="margin-bottom:16px"/>
+    <div class="flabel" style="margin-bottom:8px">Accent Color</div>
+    <div class="cprow" id="cprow"></div>
+    <div class="mact"><button class="btn-g" onclick="closeModal('modal-profile')">Cancel</button><button class="btn" onclick="saveProfile()">Save →</button></div>
+  </div>
+</div>
+<div class="mbg hidden" id="modal-np">
+  <div class="modal" style="max-width:360px;text-align:center">
+    <div id="nf-art"></div>
+    <div id="nfname" style="font-size:1.4rem;font-weight:800;letter-spacing:-.5px;margin-bottom:6px"></div>
+    <div id="nfartist" style="color:var(--muted);font-size:.95rem;margin-bottom:4px"></div>
+    <div id="nfalbum" style="color:var(--muted);font-size:.78rem;font-family:var(--mono);margin-bottom:16px"></div>
+    <div style="height:3px;background:rgba(255,255,255,.12);border-radius:2px;margin-bottom:8px;overflow:hidden"><div id="nfbar" style="height:100%;background:var(--green);border-radius:2px;transition:width 1s linear;width:0%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);font-family:var(--mono);margin-bottom:16px"><span id="nfpos">0:00</span><span id="nfdur">0:00</span></div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <button class="btn-g" onclick="openInSpotify()" style="font-size:.78rem">Open in Spotify ↗</button>
+      <button class="btn-g" onclick="copySongLink()" style="font-size:.78rem">Copy Link 🔗</button>
+      <button class="btn-g" onclick="closeModal('modal-np')" style="font-size:.78rem">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Done!</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getDatabase, ref, set, get, update, push, onValue, off } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+const CID = '3fdee41ecbad4f8284015ac2ff9c2926';
+const SCOPES = 'user-read-currently-playing user-read-playback-state user-top-read user-read-private user-read-recently-played';
+const redir = window.location.origin + window.location.pathname;
+const ACCENTS = ['#1DB954','#ff4d8d','#a855f7','#38bdf8','#ffd700','#ff6b35','#00d2aa','#f43f5e'];
+const REACTS = ['🔥','❤️','😭','💀','🤯','👑'];
+
+let db=null, token=null, me=null, gid=null, gRef=null, cRef=null;
+let sTimer=null, npInt=null, progInt=null, lastG=null, sort='default', mFilter='';
+let npData=null, unread=0;
+let prof = JSON.parse(localStorage.getItem('uprof')||'{}');
+
+// FIREBASE
+function initFB(cfg) { try{const app=initializeApp(cfg);db=getDatabase(app);return true;}catch(e){return false;} }
+function loadFBCfg() { const s=localStorage.getItem('fb_config'); if(!s) return false; try{return initFB(JSON.parse(s));}catch(e){return false;} }
+window.saveFirebaseConfig = function() {
+  const a=document.getElementById('fb-apiKey').value.trim(), d=document.getElementById('fb-dbUrl').value.trim(), p=document.getElementById('fb-projectId').value.trim();
+  if(!a||!d||!p){document.getElementById('fb-err').textContent='⚠ Fill all fields.';return;}
+  const cfg={apiKey:a,databaseURL:d,projectId:p,authDomain:`${p}.firebaseapp.com`};
+  if(!initFB(cfg)){document.getElementById('fb-err').textContent='⚠ Could not connect.';return;}
+  localStorage.setItem('fb_config',JSON.stringify(cfg)); show('screen-login'); checkCB();
+};
+
+// SCREENS
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+// SPOTIFY PKCE
+function rnd(n){const c='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';return Array.from({length:n},()=>c[Math.floor(Math.random()*c.length)]).join('');}
+async function chall(v){const d=new TextEncoder().encode(v);const h=await crypto.subtle.digest('SHA-256',d);return btoa(String.fromCharCode(...new Uint8Array(h))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');}
+window.startSpotifyAuth = async function(){
+  const v=rnd(128),ch=await chall(v);sessionStorage.setItem('pv',v);
+  window.location.href='https://accounts.spotify.com/authorize?'+new URLSearchParams({client_id:CID,response_type:'code',redirect_uri:redir,scope:SCOPES,code_challenge_method:'S256',code_challenge:ch});
+};
+async function exCode(code){
+  const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:CID,grant_type:'authorization_code',code,redirect_uri:redir,code_verifier:sessionStorage.getItem('pv')})});
+  const d=await r.json();return d.access_token||null;
+}
+async function checkCB(){
+  const p=new URLSearchParams(window.location.search),code=p.get('code'),pg=p.get('group');
+  if(pg) sessionStorage.setItem('pg',pg);
+  if(code){history.replaceState(null,null,window.location.pathname);const t=await exCode(code);if(t){sessionStorage.setItem('st',t);token=t;await loadMe();}}
+  else{const s=sessionStorage.getItem('st');if(s){token=s;await loadMe();}else show('screen-login');}
+}
+async function loadMe(){
+  try{
+    const r=await fetch('https://api.spotify.com/v1/me',{headers:{'Authorization':'Bearer '+token}});
+    const d=await r.json();if(!d.id) throw 0;
+    me={id:d.id,name:d.display_name||d.id,avatar:d.images?.[0]?.url||''};
+    ['home-avatar','group-avatar'].forEach(i=>document.getElementById(i).src=me.avatar);
+    ['home-name','group-username'].forEach(i=>document.getElementById(i).textContent=me.name);
+    const pg=sessionStorage.getItem('pg');
+    if(pg){sessionStorage.removeItem('pg');await joinGroup(pg);}else{show('screen-home');loadGroups();}
+  }catch(e){sessionStorage.removeItem('st');show('screen-login');}
+}
+window.logout=function(){sessionStorage.clear();token=null;me=null;show('screen-login');};
+
+// MODALS
+window.openModal=function(id){if(id==='modal-profile')initCP();document.getElementById(id).classList.remove('hidden');};
+window.closeModal=id=>document.getElementById(id).classList.add('hidden');
+window.selEmoji=function(el){document.querySelectorAll('.eo').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');};
+function getEmo(){return document.querySelector('.eo.sel')?.dataset.e||'🎵';}
+
+// PROFILE
+function initCP(){
+  document.getElementById('cprow').innerHTML=ACCENTS.map(c=>`<div class="copt${(prof.accent||'#1DB954')===c?' sel':''}" style="background:${c}" data-c="${c}" onclick="selColor(this)"></div>`).join('');
+  document.getElementById('pbio').value=prof.bio||'';
+}
+window.selColor=function(el){document.querySelectorAll('.copt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');};
+window.saveProfile=async function(){
+  const bio=document.getElementById('pbio').value.trim(),accent=document.querySelector('.copt.sel')?.dataset.c||'#1DB954';
+  prof={bio,accent};localStorage.setItem('uprof',JSON.stringify(prof));
+  document.documentElement.style.setProperty('--green',accent);
+  if(gid&&me) await update(ref(db,`groups/${gid}/members/${me.id}`),{bio,accent});
+  closeModal('modal-profile');toast('✓ Profile saved!');
+};
+if(prof.accent) document.documentElement.style.setProperty('--green',prof.accent);
+
+// TABS
+window.switchTab=function(name){
+  const names=['members','chat','vote','stats','activity','leaderboard'];
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',names[i]===name));
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tp-'+name).classList.add('active');
+  if(name==='chat'){unread=0;const b=document.getElementById('cbadge');b.style.display='none';scrollChat();}
+  if(name==='stats'&&lastG) renderStats(lastG);
+  if(name==='leaderboard'&&lastG) renderLB(lastG);
+  if(name==='activity') renderAct();
+  if(name==='vote'&&lastG) renderVote(lastG);
+};
+
+// GROUPS
+window.createGroup=async function(){
+  const name=document.getElementById('gni').value.trim();
+  if(!name){document.getElementById('cerr').textContent='⚠ Enter a name.';return;}
+  const id=rnd(8);
+  await set(ref(db,`groups/${id}`),{name,emoji:getEmo(),createdBy:me.id,createdAt:Date.now()});
+  await addAct(id,{type:'create',msg:`${me.name} created the group 🎉`});
+  closeModal('modal-create');await joinGroup(id);
+};
+window.joinViaLink=async function(){
+  const val=document.getElementById('jli').value.trim();let id=null;
+  try{id=new URL(val).searchParams.get('group');}catch(e){id=val;}
+  if(!id){document.getElementById('jerr').textContent='⚠ Invalid link.';return;}
+  closeModal('modal-join');await joinGroup(id);
+};
+async function joinGroup(id){
+  const snap=await get(ref(db,`groups/${id}`));
+  if(!snap.exists()){alert('Group not found!');show('screen-home');loadGroups();return;}
+  const ex=snap.val().members?.[me.id];
+  await set(ref(db,`groups/${id}/members/${me.id}`),{
+    name:me.name,avatar:me.avatar,joinedAt:ex?.joinedAt||Date.now(),
+    nowPlaying:null,sotd:ex?.sotd||null,bio:prof.bio||'',accent:prof.accent||'#1DB954',
+    lastSeen:Date.now(),reactions:ex?.reactions||{},topTracks:ex?.topTracks||[],sotdVotes:ex?.sotdVotes||{}
+  });
+  if(!ex) await addAct(id,{type:'join',msg:`${me.name} joined the group 👋`});
+  openGroup(id);
+}
+async function loadGroups(){
+  const el=document.getElementById('my-groups-list');
+  const snap=await get(ref(db,'groups'));
+  if(!snap.exists()){el.innerHTML='<div class="ltxt">No groups yet!</div>';return;}
+  const groups=snap.val();
+  const mine=Object.entries(groups).filter(([,g])=>g.members?.[me.id]);
+  if(!mine.length){el.innerHTML='<div class="ltxt">No groups yet — create or join one!</div>';return;}
+  el.innerHTML=mine.map(([id,g])=>{
+    const online=Object.values(g.members||{}).filter(m=>Date.now()-m.lastSeen<120000).length;
+    return `<div class="group-item" onclick="openGroup('${id}')">
+      <div class="group-emoji">${g.emoji||'🎵'}</div>
+      <div class="gi"><div class="gn">${esc(g.name)}</div>
+      <div class="gm">${Object.keys(g.members||{}).length} members • <span style="color:var(--green)">${online} online</span></div></div>
+      <div style="color:var(--muted)">›</div></div>`;
+  }).join('');
+}
+window.openGroup=async function(id){
+  gid=id;unread=0;
+  if(gRef)off(gRef);if(cRef)off(cRef);
+  switchTab('members');show('screen-group');
+  gRef=ref(db,`groups/${id}`);
+  onValue(gRef,s=>{if(s.exists()){lastG=s.val();renderGroup(id,s.val());}});
+  cRef=ref(db,`chats/${id}`);
+  onValue(cRef,s=>{if(s.exists())renderChat(s.val());});
+  pushMyData();fetchTT();
+  if(npInt)clearInterval(npInt);npInt=setInterval(()=>{pushMyData();ping();},30000);
+  if(progInt)clearInterval(progInt);progInt=setInterval(tickProg,1000);
+  ping();
+};
+window.goHome=function(){
+  if(gRef)off(gRef);if(cRef)off(cRef);
+  if(npInt)clearInterval(npInt);if(progInt)clearInterval(progInt);
+  gid=null;lastG=null;show('screen-home');loadGroups();
+};
+async function ping(){if(gid&&me) await update(ref(db,`groups/${gid}/members/${me.id}`),{lastSeen:Date.now()});}
+
+function renderGroup(id,g){
+  document.getElementById('gtitle').textContent=`${g.emoji||'🎵'} ${g.name}`;
+  const mems=g.members||{},cnt=Object.keys(mems).length;
+  const on=Object.values(mems).filter(m=>Date.now()-m.lastSeen<120000).length;
+  document.getElementById('gmcount').textContent=`${cnt} member${cnt!==1?'s':''}`;
+  document.getElementById('gonline').textContent=`${on} online`;
+  let sorted=Object.entries(mems);
+  if(sort==='playing') sorted=sorted.sort(([,a],[,b])=>b.nowPlaying?1:a.nowPlaying?-1:0);
+  else if(sort==='name') sorted=sorted.sort(([,a],[,b])=>a.name.localeCompare(b.name));
+  else sorted=sorted.sort(([a],[b])=>a===me.id?-1:b===me.id?1:0);
+  if(mFilter) sorted=sorted.filter(([,m])=>m.name.toLowerCase().includes(mFilter.toLowerCase()));
+  document.getElementById('mg').innerHTML=sorted.map(([uid,m])=>buildCard(uid,m,uid===me.id)).join('');
+  const at=document.querySelector('.tab.active')?.textContent||'';
+  if(at.includes('Stats'))renderStats(g);
+  if(at.includes('Board'))renderLB(g);
+  if(at.includes('Vote'))renderVote(g);
+}
+
+function buildCard(uid,m,isMe){
+  const np=m.nowPlaying,sotd=m.sotd;
+  const online=Date.now()-m.lastSeen<120000;
+  const banner=np?.art||sotd?.art||null;
+
+  const bannerH=`<div class="cb" ${isMe&&np?'onclick="openNP()" style="cursor:pointer"':''}>
+    ${banner?`<img class="cba" src="${banner}" alt=""/>`:`<div class="cbe">🎵</div>`}
+    <div class="cbo"></div>
+    <div class="cbnp">
+      ${np?`<div class="nps ${np.isPlaying?'pl':'pa'}">
+        <div class="npd"></div>${np.isPlaying?'NOW PLAYING':'PAUSED'}
+        ${np.isPlaying?`<div class="eq"><div class="eqb"></div><div class="eqb"></div><div class="eqb"></div><div class="eqb"></div></div>`:''}
+      </div>
+      <div class="nsn">${esc(np.name)}${np.explicit?`<span class="exp">E</span>`:''}</div>
+      <div class="nsar">${esc(np.artist)}</div>
+      ${np.duration?`<div class="npbar"><div class="npbf" id="pb-${uid}" style="width:${np.progress||0}%"></div></div>`:''}`:
+      `<div class="nps pa">Not playing anything</div>`}
+    </div></div>`;
+
+  const sotdH=sotd?`<div class="csotd">
+    <div class="scov">${sotd.art?`<img src="${sotd.art}" alt=""/>`:'⭐'}</div>
+    <div class="stxt"><div class="sbdg">⭐ Song of the Day</div><div class="ssng">${esc(sotd.name)}</div><div class="sart">${esc(sotd.artist)}</div></div>
+    </div>`:`<div class="se">No SOTD set yet${isMe?' — pick one!':''}</div>`;
+
+  const tracks=m.topTracks||[];
+  const ttH=tracks.length?`<div class="ttm"><div class="ttl">🎵 Top Tracks</div>
+    ${tracks.slice(0,3).map((t,i)=>`<div class="ttr">
+      <div class="ttn">${i+1}</div>
+      <div class="tta">${t.art?`<img src="${t.art}" alt=""/>`:'🎵'}</div>
+      <div class="tti"><div class="ttnm">${esc(t.name)}${t.explicit?`<span class="exp">E</span>`:''}</div><div class="ttar">${esc(t.artist)}</div></div>
+    </div>`).join('')}</div>`:'';
+
+  const reacts=m.reactions||{},myR=reacts[me.id]||{};
+  const reactH=np?`<div class="rrow">${REACTS.map(e=>{
+    const cnt=Object.values(reacts).filter(r=>r[e]).length,rx=myR[e];
+    return `<button class="rbtn${rx?' rx':''}" onclick="toggleReact('${uid}','${e}')">${e}<span class="rc">${cnt||''}</span></button>`;
+  }).join('')}</div>`:'';
+
+  const pills=`<div class="spills">
+    ${online?`<div class="spill" style="border-color:rgba(29,185,84,.3);color:var(--green)">● Online</div>`:`<div class="spill">Last seen ${timeAgo(m.lastSeen)}</div>`}
+    ${m.bio?`<div class="spill">${esc(m.bio)}</div>`:''}
+    ${np?.device?`<div class="spill">📱 ${esc(np.device)}</div>`:''}
+  </div>`;
+
+  const ctrls=isMe?`<div class="ctrls">
+    <button class="ctb" onclick="pushMyData()">↻ Refresh</button>
+    <button class="ctb" onclick="openModal('modal-sotd')">⭐ SOTD</button>
+    <button class="ctb" onclick="openNP()">🔍 Now Playing</button>
+  </div>`:`<div class="ctrls">
+    <button class="ctb w" onclick="sendWave('${uid}','${esc(m.name)}')">👋 Wave</button>
+    <button class="ctb" onclick="copySongOf('${uid}')">🔗 Copy Song</button>
+  </div>`;
+
+  return `<div class="mc ${isMe?'me':''}" ${m.accent?`style="border-color:${m.accent}33"`:''}">
+    ${bannerH}
+    <div class="cbd">
+      <div class="cur">
+        <img class="mav" src="${m.avatar||''}" onerror="this.style.opacity=0" alt="av"/>
+        <div class="mnw"><div class="mn">${esc(m.name)}</div></div>
+        ${isMe?'<span class="mebadge">You</span>':''}
+      </div>
+      ${pills}${reactH}${sotdH}${ttH}${ctrls}
+    </div></div>`;
+}
+
+// MY MUSIC
+window.pushMyData=async function(){
+  if(!gid||!me) return;
+  const np=await fetchNP();npData=np;
+  await update(ref(db,`groups/${gid}/members/${me.id}`),{nowPlaying:np,lastSeen:Date.now()});
+};
+async function fetchNP(){
+  try{
+    const r=await fetch('https://api.spotify.com/v1/me/player/currently-playing',{headers:{'Authorization':'Bearer '+token}});
+    if(r.status===204||r.status===404) return null;
+    const d=await r.json();if(!d?.item) return null;
+    return {name:d.item.name,artist:d.item.artists.map(a=>a.name).join(', '),art:d.item.album.images?.[1]?.url||null,
+      album:d.item.album.name,isPlaying:d.is_playing,explicit:d.item.explicit,
+      progress:Math.round((d.progress_ms/d.item.duration_ms)*100),progressMs:d.progress_ms,
+      duration:d.item.duration_ms,id:d.item.id,device:d.device?.name||null};
+  }catch(e){return null;}
+}
+async function fetchTT(){
+  if(!gid||!me) return;
+  try{
+    const r=await fetch('https://api.spotify.com/v1/me/top/tracks?limit=5&time_range=short_term',{headers:{'Authorization':'Bearer '+token}});
+    const d=await r.json();if(!d.items?.length) return;
+    const tracks=d.items.map(t=>({name:t.name,artist:t.artists.map(a=>a.name).join(', '),art:t.album.images?.[2]?.url||null,explicit:t.explicit}));
+    await update(ref(db,`groups/${gid}/members/${me.id}`),{topTracks:tracks});
+  }catch(e){}
+}
+
+// PROGRESS TICKER
+function tickProg(){
+  if(!npData?.isPlaying) return;
+  npData.progressMs=(npData.progressMs||0)+1000;
+  const pct=Math.min((npData.progressMs/npData.duration)*100,100);
+  const el=document.getElementById(`pb-${me.id}`);if(el) el.style.width=pct+'%';
+  if(!document.getElementById('modal-np').classList.contains('hidden')){
+    document.getElementById('nfbar').style.width=pct+'%';
+    document.getElementById('nfpos').textContent=msT(npData.progressMs);
+  }
+}
+
+// NOW PLAYING FULL
+window.openNP=function(){
+  if(!npData) return;
+  document.getElementById('nf-art').innerHTML=npData.art?`<img src="${npData.art}" style="width:100%;height:100%;object-fit:cover" alt=""/>`:'🎵';
+  document.getElementById('nfname').textContent=npData.name;
+  document.getElementById('nfartist').textContent=npData.artist;
+  document.getElementById('nfalbum').textContent=npData.album||'';
+  document.getElementById('nfbar').style.width=(npData.progress||0)+'%';
+  document.getElementById('nfpos').textContent=msT(npData.progressMs||0);
+  document.getElementById('nfdur').textContent=msT(npData.duration||0);
+  openModal('modal-np');
+};
+window.openInSpotify=function(){if(npData?.id) window.open(`https://open.spotify.com/track/${npData.id}`,'_blank');};
+window.copySongLink=function(){if(npData?.id){navigator.clipboard.writeText(`https://open.spotify.com/track/${npData.id}`);toast('🔗 Link copied!');}};
+window.copySongOf=async function(uid){
+  const s=await get(ref(db,`groups/${gid}/members/${uid}`));if(!s.exists()) return;
+  const m=s.val(),id=m.nowPlaying?.id||m.sotd?.id;
+  if(id){navigator.clipboard.writeText(`https://open.spotify.com/track/${id}`);toast('🔗 Song link copied!');}
+  else toast('No song to copy!');
+};
+
+// REACTIONS
+window.toggleReact=async function(uid,e){
+  const path=`groups/${gid}/members/${uid}/reactions/${me.id}/${e}`;
+  const s=await get(ref(db,path));await set(ref(db,path),s.val()?null:true);
+  if(!s.val()&&uid!==me.id) await addAct(gid,{type:'react',msg:`${me.name} reacted ${e}`});
+};
+
+// WAVE
+window.sendWave=async function(uid,name){
+  await addAct(gid,{type:'wave',msg:`${me.name} waved at ${name} 👋`});toast(`👋 Waved at ${name}!`);
+};
+
+// SOTD
+window.dSearch=function(v){
+  clearTimeout(sTimer);
+  if(!v.trim()){document.getElementById('sres').innerHTML='<div class="ltxt">Start typing...</div>';return;}
+  sTimer=setTimeout(()=>searchS(v),400);
+};
+async function searchS(q){
+  document.getElementById('sres').innerHTML='<div class="ltxt">Searching...</div>';
+  try{
+    const r=await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=6`,{headers:{'Authorization':'Bearer '+token}});
+    const d=await r.json();const tracks=d.tracks?.items||[];
+    if(!tracks.length){document.getElementById('sres').innerHTML='<div class="ltxt">No results.</div>';return;}
+    document.getElementById('sres').innerHTML=tracks.map(t=>{
+      const art=t.album.images?.[1]?.url;
+      const dd=JSON.stringify({name:t.name,artist:t.artists.map(a=>a.name).join(', '),art:art||null,id:t.id,explicit:t.explicit}).replace(/"/g,'&quot;');
+      return `<div class="ri" onclick="setSotd('${dd}')">
+        <div class="ra">${art?`<img src="${art}" alt=""/>`:'🎵'}</div>
+        <div><div class="rt">${esc(t.name)} ${t.explicit?'<span class="exp">E</span>':''}</div><div class="rar">${esc(t.artists.map(a=>a.name).join(', '))}</div></div>
+      </div>`;
+    }).join('');
+  }catch(e){document.getElementById('sres').innerHTML='<div class="ltxt">Search failed.</div>';}
+}
+window.setSotd=async function(dd){
+  let t;try{t=JSON.parse(dd.replace(/&quot;/g,'"'));}catch(e){return;}
+  await update(ref(db,`groups/${gid}/members/${me.id}`),{sotd:t});
+  await addAct(gid,{type:'sotd',msg:`${me.name} set their SOTD to "${t.name}" ⭐`});
+  closeModal('modal-sotd');toast('⭐ SOTD set!');
+};
+
+// CHAT
+window.sendChat=async function(){
+  const inp=document.getElementById('ci'),msg=inp.value.trim();if(!msg) return;inp.value='';
+  await push(ref(db,`chats/${gid}`),{uid:me.id,name:me.name,avatar:me.avatar,msg,ts:Date.now()});
+};
+function renderChat(data){
+  const msgs=Object.values(data).sort((a,b)=>a.ts-b.ts);
+  const el=document.getElementById('chat-msgs');
+  const active=document.getElementById('tp-chat').classList.contains('active');
+  if(!active){const last=msgs[msgs.length-1];if(last?.uid!==me.id){unread++;const b=document.getElementById('cbadge');b.style.display='inline';b.textContent=unread;}}
+  el.innerHTML=msgs.map(m=>{const mine=m.uid===me.id;
+    return `<div class="cmsg ${mine?'mine':''}">
+      <img class="cav" src="${m.avatar||''}" onerror="this.style.opacity=0" alt="av"/>
+      <div class="cbw">${!mine?`<div class="cnm">${esc(m.name)}</div>`:''}
+        <div class="cbb">${esc(m.msg)}</div>
+        <div class="ct">${new Date(m.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+      </div></div>`;
+  }).join('');
+  if(active) scrollChat();
+}
+function scrollChat(){const el=document.getElementById('chat-msgs');if(el) el.scrollTop=el.scrollHeight;}
+
+// VOTE
+function renderVote(g){
+  const mems=g.members||{};
+  const sotds=Object.entries(mems).filter(([,m])=>m.sotd).map(([uid,m])=>({uid,name:m.name,sotd:m.sotd,votes:m.sotdVotes||{}}));
+  const el=document.getElementById('vtracks');
+  if(!sotds.length){el.innerHTML='<div class="ltxt">No SOTDs set yet.</div>';return;}
+  const total=sotds.reduce((s,t)=>s+Object.keys(t.votes).length,0);
+  el.innerHTML=sotds.map(s=>{
+    const cnt=Object.keys(s.votes).length,pct=total?Math.round((cnt/total)*100):0,vd=s.votes[me.id];
+    return `<div class="vtr ${vd?'vd':''}" onclick="castVote('${s.uid}')">
+      <div class="vta">${s.sotd.art?`<img src="${s.sotd.art}" alt=""/>`:'⭐'}</div>
+      <div class="vti"><div class="vtname">${esc(s.sotd.name)}</div><div class="vtby">by ${esc(s.name)}</div>
+      <div class="vbar-w"><div class="vbar" style="width:${pct}%"></div></div></div>
+      <div class="vtc">${cnt}${vd?' ✓':''}</div></div>`;
+  }).join('');
+}
+window.castVote=async function(uid){
+  const path=`groups/${gid}/members/${uid}/sotdVotes/${me.id}`;
+  const s=await get(ref(db,path));await set(ref(db,path),s.val()?null:true);toast(s.val()?'Vote removed':'✓ Voted!');
+};
+
+// STATS
+function renderStats(g){
+  const mems=Object.values(g.members||{});
+  const playing=mems.filter(m=>m.nowPlaying?.isPlaying).length;
+  const online=mems.filter(m=>Date.now()-m.lastSeen<120000).length;
+  const withSotd=mems.filter(m=>m.sotd).length;
+  const ac={};mems.forEach(m=>(m.topTracks||[]).forEach(t=>{const a=t.artist.split(',')[0].trim();ac[a]=(ac[a]||0)+1;}));
+  const topA=Object.entries(ac).sort(([,a],[,b])=>b-a).slice(0,5);
+  const sc={};mems.forEach(m=>(m.topTracks||[]).forEach(t=>{sc[t.name]=(sc[t.name]||0)+1;}));
+  const top=Object.entries(sc).sort(([,a],[,b])=>b-a)[0];
+  document.getElementById('sgrid').innerHTML=`
+    <div class="sc"><div class="sv" style="color:var(--green)">${playing}</div><div class="sl">Playing</div></div>
+    <div class="sc"><div class="sv" style="color:var(--blue)">${online}</div><div class="sl">Online</div></div>
+    <div class="sc"><div class="sv" style="color:var(--gold)">${withSotd}</div><div class="sl">SOTDs Set</div></div>
+    <div class="sc"><div class="sv">${mems.length}</div><div class="sl">Members</div></div>
+    ${top?`<div class="sc" style="grid-column:1/-1"><div class="sv" style="font-size:1rem;letter-spacing:0">${esc(top[0])}</div><div class="sl">Most Popular Song</div><div class="ssb">${top[1]} members have it in their top tracks</div></div>`:''}`;
+  document.getElementById('talist').innerHTML=topA.length?topA.map(([a,c],i)=>`
+    <div class="ai"><div class="aic">${['🥇','🥈','🥉','4️⃣','5️⃣'][i]}</div><div class="ait"><strong>${esc(a)}</strong></div><div class="aim">${c} fan${c!==1?'s':''}</div></div>`).join(''):'<div class="ltxt">Not enough data.</div>';
+}
+
+// LEADERBOARD
+function renderLB(g){
+  const mems=Object.entries(g.members||{});
+  const scores=mems.map(([uid,m])=>{
+    const rr=Object.values(m.reactions||{}).reduce((s,r)=>s+Object.values(r).filter(Boolean).length,0);
+    const vr=Object.keys(m.sotdVotes||{}).length;
+    return {uid,m,score:rr*2+vr*3+(m.sotd?5:0)+(m.nowPlaying?1:0)};
+  }).sort((a,b)=>b.score-a.score);
+  const rnks=['🥇','🥈','🥉','4','5','6','7','8'];
+  document.getElementById('lboard').innerHTML=scores.map((s,i)=>`
+    <div class="lbr">
+      <div class="lbrnk">${rnks[i]||i+1}</div>
+      <img class="lbav" src="${s.m.avatar||''}" onerror="this.style.opacity=0" alt="av"/>
+      <div class="lbi">
+        <div class="lbn">${esc(s.m.name)} ${s.uid===me.id?'<span style="color:var(--green);font-size:.7rem">(you)</span>':''}</div>
+        <div class="lbs">${s.m.sotd?`SOTD: ${esc(s.m.sotd.name)}`:'No SOTD'} ${s.m.nowPlaying?'• 🎵 Playing':''}</div>
+      </div>
+      <div class="lbsc">${s.score}pts</div>
+    </div>`).join('');
+}
+
+// ACTIVITY
+async function addAct(id,data){await push(ref(db,`activity/${id}`),{...data,ts:Date.now()});}
+function renderAct(){
+  get(ref(db,`activity/${gid}`)).then(s=>{
+    if(!s.exists()){document.getElementById('afeed').innerHTML='<div class="ltxt">No activity yet.</div>';return;}
+    const items=Object.values(s.val()).sort((a,b)=>b.ts-a.ts).slice(0,30);
+    const ic={create:'🎉',join:'👋',sotd:'⭐',react:'😄',wave:'👋'};
+    document.getElementById('afeed').innerHTML=items.map(a=>`
+      <div class="ai"><div class="aic">${ic[a.type]||'📌'}</div><div class="ait">${esc(a.msg)}</div><div class="aim">${timeAgo(a.ts)}</div></div>`).join('');
+  });
+}
+
+// INVITE
+window.copyInviteLink=function(){navigator.clipboard.writeText(`${redir}?group=${gid}`).then(()=>toast('🔗 Link copied!'));};
+
+// FILTER / SORT
+window.filterMembers=function(v){mFilter=v;if(lastG)renderGroup(gid,lastG);};
+window.setSort=function(m,btn){sort=m;document.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('ac'));btn.classList.add('ac');if(lastG)renderGroup(gid,lastG);};
+
+// UTILS
+function esc(s){return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):''}
+function msT(ms){const s=Math.floor(ms/1000);return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;}
+function timeAgo(ts){if(!ts)return 'never';const d=Math.floor((Date.now()-ts)/1000);if(d<60)return 'just now';if(d<3600)return `${Math.floor(d/60)}m ago`;if(d<86400)return `${Math.floor(d/3600)}h ago`;return `${Math.floor(d/86400)}d ago`;}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// INIT
+const HC={apiKey:"AIzaSyDdmfszOUXijhoIK7BJ3aOegqNvDJooOaI",databaseURL:"https://abmusic-826bb-default-rtdb.firebaseio.com",projectId:"abmusic-826bb",authDomain:"abmusic-826bb.firebaseapp.com"};
+localStorage.setItem('fb_config',JSON.stringify(HC));
+loadFBCfg();checkCB();
+
+['modal-create','modal-join','modal-sotd','modal-profile','modal-np'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))closeModal(id);});
+});
+</script>
+</body>
+</html>
